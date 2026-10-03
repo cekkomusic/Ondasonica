@@ -1,0 +1,15 @@
+rules_version = '2';
+
+// ATTENZIONE: nessuna autenticazione. Chiunque conosca la configurazione
+// del progetto (cioè chiunque apra l'app) può leggere e scrivere queste
+// collezioni. È una scelta voluta: app per un gruppo di amici fidati.
+// Le regole limitano almeno l'accesso alle sole collezioni usate dall'app.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /leads/{id}    { allow read, write: if true; }
+    match /attivita/{id} { allow read, write: if true; }
+    match /spese/{id}    { allow read, write: if true; }
+    match /config/{id}   { allow read, write: if true; }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

@@ -1,0 +1,182 @@
+===========================================================================
+ISTRUZIONI PER CLAUDE CODE — Web app "Ondasonica Manager"
+===========================================================================
+
+CONTESTO
+--------
+Ondasonica è una tribute band dei Subsonica (base a Torino) che sta
+procacciando date per la stagione 2027. È stato fatto un lavoro di ricerca
+e catalogazione (61 lead di locali/festival/sagre/agenzie di booking,
+documento di strategia, bozza EPK, template email) e ora va trasformato
+in una web app condivisa, ottimizzata per smartphone, che la band possa
+usare per tenere traccia di tutto.
+
+Questo pacchetto contiene:
+  data/leads.json          -> i 61 lead (locali, festival, sagre, agenzie)
+  data/attivita.json        -> log di cosa è stato fatto finora (seed)
+  data/spese.json           -> config spese condivise + array vuoto da popolare
+  data/scheda_tecnica.json  -> scheda tecnica on-stage della band, vuota
+  docs/*.md                 -> strategia, EPK bozza, template email (testo
+                                di riferimento, non vanno editati dall'app,
+                                servono da contenuto/contesto)
+
+OBIETTIVO
+---------
+Costruire una web app mobile-first, condivisa tramite un singolo link:
+CHIUNQUE ABBIA IL LINK PUÒ VEDERE E MODIFICARE I DATI, SENZA LOGIN.
+Non c'è autenticazione: è un'app "da gruppo di amici fidati", non multi-
+tenant e non protetta. Questo va reso esplicito all'utente nel README
+("chiunque abbia il link può modificare tutto, condividerlo solo con le
+persone fidate").
+
+Dato che più persone devono poter salvare modifiche condivise in tempo
+reale (o quasi) da telefoni diversi, serve un vero backend con persistenza
+condivisa — NON va bene localStorage o uno stato solo client-side.
+
+STACK CONSIGLIATO (puoi cambiarlo se hai un'alternativa migliore, ma
+motiva la scelta nel README):
+  - Frontend: React (Next.js, app router) oppure Vite+React — scegli tu in
+    base a cosa rende più semplice il deploy.
+  - Persistenza condivisa: Firebase (Firestore) in modalità realtime.
+    Motivo: free tier generoso, SDK JS semplice, niente server da gestire,
+    sync in tempo reale tra più telefoni "gratis" (onSnapshot), adatto a
+    un gruppo di 5 persone. In alternativa va bene Supabase (Postgres)
+    se preferisci SQL, ma Firestore è la scelta di default più rapida da
+    implementare qui.
+  - Deploy: Vercel o Netlify (free tier), con dominio tipo
+    ondasonica-manager.vercel.app. L'utente dovrà creare un progetto
+    Firebase gratuito e incollare le chiavi di config in un file .env —
+    prepara un .env.example chiaro e documenta il passaggio nel README,
+    perché l'utente lo farà da solo dopo che gli consegni il codice.
+
+Se per qualunque motivo preferisci evitare un servizio esterno come
+Firebase, l'alternativa accettabile è: Next.js API routes + database
+Postgres gestito (es. Vercel Postgres / Neon free tier) con polling
+client ogni pochi secondi invece di realtime. Non usare SQLite su hosting
+serverless (il filesystem non persiste tra le richieste): se scegli
+SQLite, va abbinato a un host con disco persistente (es. Render, Fly.io)
+e vanno documentati i passaggi di deploy.
+
+All'avvio dell'app, importa i dati da data/*.json come seed iniziale nel
+database scelto (scrivi uno script di seed, es. scripts/seed.ts, da
+eseguire una tantum dopo il primo deploy).
+
+DESIGN / UX
+-----------
+Estetica: la band suona musica elettronica/rock italiana (tributo ai
+Subsonica) — il mood visivo deve richiamarlo. Tema scuro di base, con
+accenti "luminosi"/neon (glow, ombre colorate soft, piccoli gradienti),
+coerente con l'immaginario delle visuals usate nei loro show dal vivo
+(stile cinematografico con effetti laser/neon/tunnel). Niente eccessi
+kitsch: elegante e moderno, non un sito anni 2000 pieno di effetti.
+
+Layout mobile-first obbligatorio: la app verrà usata quasi solo da
+smartphone. Menu di navigazione in stile bottom-nav (barra fissa in basso
+con le 4 sezioni + eventuale home), transizioni morbide tra le pagine,
+componenti touch-friendly (bottoni grandi, swipe dove ha senso).
+
+Feedback aptico: usa navigator.vibrate() per un piccolo "tick" tattile
+su azioni importanti (salvataggio di una modifica, toggle di uno stato,
+spunta di un pagamento) sui dispositivi che lo supportano (soprattutto
+Android/Chrome — su iOS Safari navigator.vibrate non è supportato, quindi
+va trattato come enhancement opzionale che fallisce silenziosamente, non
+come requisito bloccante).
+
+Tabelle: la vista lead deve restare leggibile su schermo piccolo — non
+mettere tutte le 11 colonne in una tabella larga su mobile. Usa invece
+un layout a "card" per riga (una card per lead, con i campi principali
+in evidenza — nome, priorità con colore, comune/regione, stato contatto
+— e il resto espandibile al tap), con una vista tabellare completa
+disponibile solo su schermi larghi (desktop/tablet) come variante
+opzionale.
+
+SEZIONI / MENU DA IMPLEMENTARE
+-------------------------------
+
+1) HOME / DASHBOARD
+   Riepilogo rapido: quanti lead per priorità e per stato contatto
+   (es. "12 contattati su 61", percentuale), prossime attività aperte,
+   eventuale riepilogo spese non saldate. Pensala come landing page che
+   dà subito un colpo d'occhio sullo stato del lavoro.
+
+2) LOCALI (lead)
+   Elenco dei 61 lead da data/leads.json, filtrabile per priorità,
+   regione, tipo e stato contatto; campo di ricerca testuale libero.
+   Per ogni lead, editabili DA CHIUNQUE e persistiti subito:
+     - statoContatto (select: "Da contattare" / "Contattato" /
+       "Risposta ricevuta" / "Data fissata" / "Non interessato")
+     - notaUtente (campo note libero, multi-riga)
+     - dataUltimoContatto (data opzionale)
+   Gli altri campi (nome, tipo, comune, regione, periodo2026, genere,
+   contatto, noteRicerca, fonte) sono di sola lettura: sono il risultato
+   della ricerca fatta, non vanno modificati dall'app (se l'utente li
+   vuole correggere, può farlo editando il JSON sorgente più avanti —
+   non serve un editor per questi campi ora).
+   Nel dettaglio di un lead, mostra "fonte" come link cliccabile.
+
+3) ATTIVITÀ
+   Log/checklist di cosa è stato fatto e cosa resta da fare, seedato da
+   data/attivita.json. Chiunque deve poter:
+     - aggiungere una nuova attività (titolo, descrizione opzionale, stato)
+     - cambiare lo stato di un'attività esistente (es. "Da fare" /
+       "In corso" / "Completata")
+     - aggiungere/editare una nota libera su ogni attività
+   Vista a lista, ordinata per data più recente, con indicatore di stato
+   colorato.
+
+4) SPESE
+   Seedata da data/spese.json (5 partecipanti: SBERLA, CEKKO, ADRY,
+   VALTER, PHIL — la divisione è sempre equa su questi 5, salvo diversa
+   indicazione futura).
+   Chiunque deve poter:
+     - aggiungere una nuova voce di spesa: tipologia/descrizione,
+       importo totale, data, chi l'ha inserita
+     - l'app calcola automaticamente la quota a testa (importoTotale / 5)
+     - per ciascuno dei 5 partecipanti, un toggle "pagato / non pagato"
+       con un campo nota libero accanto (es. "pagato in contanti il 3/10")
+   Vista riepilogo per spesa (lista spese con stato pagamenti a colpo
+   d'occhio, es. 5 pallini colorati pagato/non pagato) e, se ha senso,
+   un piccolo riepilogo "quanto deve ancora versare ciascuno in totale".
+   Non serve gestione di saldi/debiti incrociati complessi: è un tracker
+   di "ho pagato la mia quota sì/no" per ogni spesa, non un sistema di
+   contabilità.
+
+5) SCHEDA TECNICA
+   Form che rispecchia la struttura di data/scheda_tecnica.json
+   (formazione, stage plot, backline, audio, luci, visuals/proiezioni,
+   alimentazione elettrica, tempi di montaggio/soundcheck/smontaggio,
+   note generali). Per ORA i campi sono vuoti: l'importante è che il
+   form esista, sia editabile da chiunque e salvi correttamente — i
+   contenuti li compilerà la band in un secondo momento. Mantieni la
+   struttura dati così com'è (non inventare campi aggiuntivi non
+   richiesti, ma puoi migliorare l'etichettatura/UX dei campi esistenti).
+
+DATI — NOTE IMPORTANTI
+-----------------------
+- I file in data/*.json sono il seed iniziale, da importare nel database
+  al primo avvio (script di seed, non va rieseguito automaticamente ad
+  ogni deploy o sovrascriverebbe le modifiche fatte dagli utenti).
+- "priorita" nei lead ha 4 valori possibili: "Alta", "Media-Alta",
+  "Media", "Info/Concorrenza" — usa questi stessi valori/colori per
+  coerenza con il lavoro già fatto (verde=Alta, giallo=Media-Alta,
+  giallo chiaro=Media, grigio=Info/Concorrenza, come nel foglio Excel
+  originale), non reinventare una nuova scala.
+- Il campo "contatto" nei lead è testo libero (può contenere email,
+  telefono, link social insieme) — mostralo così com'è, non provare a
+  parsificarlo in sotto-campi.
+
+COSA CONSEGNARE
+----------------
+- Il codice sorgente completo dell'app.
+- Un README.md con: come girare il progetto in locale, come creare il
+  progetto Firebase (o l'alternativa scelta) e dove incollare le chiavi,
+  come fare il deploy su Vercel/Netlify, come eseguire lo script di seed
+  la prima volta.
+- Un .env.example con tutte le variabili necessarie (senza valori reali).
+- Fai presente esplicitamente all'utente, a fine lavoro, che l'app non ha
+  autenticazione: chiunque riceva il link può vedere e modificare tutto.
+
+Se qualcosa in queste istruzioni è ambiguo o ti sembra avere un'alternativa
+tecnica chiaramente migliore, scegli tu la soluzione più semplice e
+robusta e documenta la scelta nel README — non serve bloccarti a chiedere,
+ma spiega sempre le decisioni prese.
