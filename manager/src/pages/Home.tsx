@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { useCollection } from "../lib/hooks";
-import { PRIORITA, STATI_CONTATTO, type Attivita, type Lead, type Spesa } from "../lib/types";
+import { PRIORITA, STATI_CONTATTO, type Attivita, type DataPresa, type Lead, type Spesa } from "../lib/types";
 import { attivitaClass, prioClass, statoClass } from "../components/Badges";
-import { dataIt, euro } from "../lib/format";
+import { dataIt, euro, today } from "../lib/format";
 import { residui, usePartecipanti } from "./Spese";
 import { Loading } from "../components/States";
 
@@ -10,9 +10,14 @@ export default function Home() {
   const leads = useCollection<Lead>("leads");
   const att = useCollection<Attivita>("attivita");
   const spese = useCollection<Spesa>("spese");
+  const date = useCollection<DataPresa>("date");
   const { partecipanti } = usePartecipanti();
 
-  if (leads.loading || att.loading || spese.loading) return <Loading />;
+  if (leads.loading || att.loading || spese.loading || date.loading) return <Loading />;
+
+  const oggi = today();
+  const prossimeDate = date.data.filter((d) => d.data >= oggi).sort((a, b) => a.data.localeCompare(b.data));
+  const prossima = prossimeDate[0];
 
   const L = leads.data;
   const tot = L.length;
@@ -43,6 +48,18 @@ export default function Home() {
         </h1>
         <p className="muted">Booking, attività e spese della band</p>
       </header>
+
+      {prossima && (
+        <Link to="/date" className="card glow-card next-gig">
+          <p className="eyebrow">Prossima data</p>
+          <h3>{prossima.locale}</h3>
+          <p className="muted small">
+            {new Date(prossima.data + "T12:00:00").toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}
+            {prossima.indirizzo ? ` · ${prossima.indirizzo}` : ""}
+          </p>
+          {prossimeDate.length > 1 && <p className="muted tiny">+ altre {prossimeDate.length - 1} in programma</p>}
+        </Link>
+      )}
 
       <section className="card glow-card progress-card">
         <div className="ring" style={{ ["--p" as string]: pct }}>

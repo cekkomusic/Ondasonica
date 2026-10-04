@@ -4,7 +4,7 @@ Web app mobile-first della band **Ondasonica** (tributo ai Subsonica) per gestir
 lead di locali/festival, attività, spese condivise e scheda tecnica.
 
 > ⚠️ **ATTENZIONE — NESSUN LOGIN.** Chiunque abbia il link dell'app può vedere **e modificare** tutti i dati
-> (lead, note, spese, scheda tecnica). Condividi il link **solo con le persone fidate** della band.
+> (lead, note, spese, date, scaletta, scheda tecnica). Condividi il link **solo con le persone fidate** della band.
 > Non inserire dati sensibili (IBAN, password, documenti).
 
 ## Sezioni
@@ -13,6 +13,8 @@ lead di locali/festival, attività, spese condivise e scheda tecnica.
 |---|---|
 | **Home** | Colpo d'occhio: % lead contattati, lead per priorità e per stato, attività aperte, spese da saldare, link ai documenti (strategia, EPK, template email). |
 | **Locali** | I 61 lead come card (tap per espandere). Filtri per priorità, regione, tipo, stato + ricerca libera. Modificabili: stato contatto, data ultimo contatto, note. Su schermi larghi c'è anche la vista **Tabella**. |
+| **Date prese** | Concerti confermati: data, locale, indirizzo, cachet concordato, service sì/no, referente, presa da. Card con "In programma" / "Passate", tabella su schermi larghi, link a Maps. La prossima data compare in Home. |
+| **Scaletta** | Sotto-tab **Prossimo live** + una **Proposta** per ogni membro. Nel prossimo live l'ordine è di sola lettura (si cambiano solo i colori delle righe, toccando il numero). Nelle proposte personali: trascina ⠿ per spostare le righe, colori, aggiungi/togli brani e stacchi, poi **Salva** o **Rendi prossimo live** (copia la proposta nel prossimo live). Sotto ogni tab c'è il riquadro **Proposte nuovi pezzi**: nelle tab personali si scrive e si salva, sotto il prossimo live compare in automatico come "titolo proposta da NOME" (sola lettura). |
 | **Attività** | Log/checklist ordinato per data. Aggiungi attività, cambia stato, modifica descrizione/note, elimina. |
 | **Spese** | Nuova spesa (descrizione, importo, data, chi l'ha inserita) → quota a testa calcolata su 5. Per ogni partecipante toggle pagato/non pagato + nota. Riepilogo "quanto deve ancora versare ciascuno". |
 | **Scheda tecnica** | Form a sezioni che rispecchia `data/scheda_tecnica.json`, salvataggio automatico campo per campo. |
@@ -40,6 +42,9 @@ Consiglio: dal telefono, menu del browser → **"Aggiungi a schermata Home"** pe
 - Formazione (scheda tecnica): il JSON originale ha `formazione: []`; ogni membro è salvato come
   `{ nome, ruolo }`.
 - Quando un lead passa da "Da contattare" a un altro stato e non ha una data, viene proposta la data di oggi.
+- Scaletta: i brani sono numerati in automatico (quindi il doppio "17" della lista originale diventa 17-18);
+  le righe "sezione" senza titolo sono gli stacchi tra blocchi, "BIS" e "ALTRE" sono intestazioni e i brani
+  dopo "ALTRE" non sono numerati. Scaletta iniziale in `data/scaletta.json`.
 - I documenti in `docs/*.md` sono visualizzati in sola lettura nella sezione Documenti (dalla Home).
 
 ## Struttura
@@ -52,7 +57,8 @@ src/             codice dell'app
 firestore.rules  regole di sicurezza da pubblicare su Firebase
 ```
 
-Modello dati Firestore: `leads/{id}`, `attivita/{id}`, `spese/{id}`, `config/spese`,
+Modello dati Firestore: `leads/{id}`, `attivita/{id}`, `spese/{id}`, `date/{id}`, `scalette/live`,
+`scalette/{MEMBRO}` (proposta + nuovi pezzi), `config/spese`,
 `config/schedaTecnica`, `config/seed` (marcatore "seed già eseguito").
 
 ---
@@ -100,9 +106,14 @@ Dopo aver creato `.env` e pubblicato le regole:
 npm run seed
 ```
 
-Carica in Firestore i 61 lead, le attività, la configurazione spese e la scheda tecnica vuota.
+Carica in Firestore i 61 lead, le attività, la configurazione spese, la scheda tecnica vuota e la scaletta
+del prossimo live.
 **Va eseguito una sola volta**: se il database è già popolato lo script si ferma da solo, così non
-sovrascrive le modifiche fatte dalla band. Non è collegato al deploy.
+sovrascrive le modifiche fatte dalla band (unica eccezione: se manca la scaletta del prossimo live, la
+aggiunge). Non è collegato al deploy.
+
+> Se avevi già pubblicato le regole prima dell'aggiunta di Scaletta e Date prese, ripubblica `firestore.rules`
+> (ora include anche `scalette` e `date`), altrimenti quelle sezioni non riescono a salvare.
 
 Per reimportare tutto da zero (⚠️ **cancella** stati, note e date inseriti nell'app su lead/attività/scheda;
 le spese aggiunte nell'app non vengono toccate):

@@ -10,6 +10,8 @@ service cloud.firestore {
     match /attivita/{id} { allow read, write: if true; }
     match /spese/{id}    { allow read, write: if true; }
     match /config/{id}   { allow read, write: if true; }
+    match /scalette/{id} { allow read, write: if true; }
+    match /date/{id}     { allow read, write: if true; }
     match /{document=**} { allow read, write: if false; }
   }
 }

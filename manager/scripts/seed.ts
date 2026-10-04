@@ -57,6 +57,18 @@ const load = <T>(name: string): T => JSON.parse(readFileSync(resolve(root, "data
 async function main() {
   const marker = doc(db, "config", "seed");
   const existing = await getDoc(marker);
+
+  // La scaletta è stata aggiunta dopo: la carichiamo se manca, anche su un database già popolato.
+  const live = doc(db, "scalette", "live");
+  if (force || !(await getDoc(live)).exists()) {
+    const sc = load<{ righe: { tipo: string; titolo: string }[] }>("scaletta.json");
+    const righe = sc.righe.map((r, i) => ({ id: `r${i}`, tipo: r.tipo, titolo: r.titolo, colore: "" }));
+    const b = writeBatch(db);
+    b.set(live, { righe, aggiornato: new Date().toISOString(), origine: "" }, { merge: true });
+    await b.commit();
+    console.log(`✓ Scaletta prossimo live importata (${righe.length} righe).`);
+  }
+
   if (existing.exists() && !force) {
     console.log(`ℹ Database già popolato il ${existing.data().at}. Niente da fare.`);
     console.log("  Per reimportare tutto (sovrascrive le modifiche fatte nell'app): npm run seed:force");

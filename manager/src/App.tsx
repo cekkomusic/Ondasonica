@@ -10,11 +10,15 @@ const Leads = lazy(() => import("./pages/Leads"));
 const Attivita = lazy(() => import("./pages/Attivita"));
 const Spese = lazy(() => import("./pages/Spese"));
 const Scheda = lazy(() => import("./pages/Scheda"));
+const Scaletta = lazy(() => import("./pages/Scaletta"));
+const DatePrese = lazy(() => import("./pages/Date"));
 const Documenti = lazy(() => import("./pages/Documenti"));
 
 const NAV = [
   { to: "/", label: "Home", icon: <IconHome /> },
   { to: "/locali", label: "Locali", icon: <IconPin /> },
+  { to: "/date", label: "Date", icon: <IconCalendar /> },
+  { to: "/scaletta", label: "Scaletta", icon: <IconMusic /> },
   { to: "/attivita", label: "Attività", icon: <IconCheck /> },
   { to: "/spese", label: "Spese", icon: <IconEuro /> },
   { to: "/scheda", label: "Scheda", icon: <IconSliders /> },
@@ -60,6 +64,8 @@ function Shell() {
             <Route path="/attivita" element={<Attivita />} />
             <Route path="/spese" element={<Spese />} />
             <Route path="/scheda" element={<Scheda />} />
+            <Route path="/scaletta" element={<Scaletta />} />
+            <Route path="/date" element={<DatePrese />} />
             <Route path="/documenti" element={<Documenti />} />
             <Route path="/documenti/:id" element={<Documenti />} />
             <Route path="*" element={<Home />} />
@@ -159,6 +165,24 @@ function IconPin() {
     <Svg>
       <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z" />
       <circle cx="12" cy="9.5" r="2.5" />
+    </Svg>
+  );
+}
+function IconCalendar() {
+  return (
+    <Svg>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="3" />
+      <path d="M3.5 10h17M8 3v4M16 3v4" />
+      <circle cx="12" cy="15" r="1.6" fill="currentColor" />
+    </Svg>
+  );
+}
+function IconMusic() {
+  return (
+    <Svg>
+      <path d="M9 18V5.5l11-2V16" />
+      <circle cx="6.5" cy="18" r="2.5" />
+      <circle cx="17.5" cy="16" r="2.5" />
     </Svg>
   );
 }

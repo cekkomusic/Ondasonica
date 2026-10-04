@@ -81,3 +81,39 @@ export interface SchedaTecnica {
   tempi: { montaggio: string; soundcheck: string; smontaggio: string };
   noteGenerali: string;
 }
+
+export interface RigaScaletta {
+  id: string;
+  /** "sezione" = intestazione (es. BIS, ALTRE) o, se senza titolo, uno stacco tra blocchi. */
+  tipo: "brano" | "sezione";
+  titolo: string;
+  colore: string; // chiave di COLORI_RIGA, "" = nessuno
+}
+
+export interface NuovoPezzo {
+  id: string;
+  titolo: string;
+  creato: string;
+}
+
+/** Documento scalette/live oppure scalette/{MEMBRO}. */
+export interface ScalettaDoc {
+  id: string;
+  righe?: RigaScaletta[];
+  aggiornato?: string | null;
+  origine?: string; // solo per "live": da quale proposta è stata copiata
+  nuoviPezzi?: NuovoPezzo[];
+}
+
+/** Data presa (concerto confermato). */
+export interface DataPresa {
+  id: string;
+  data: string; // YYYY-MM-DD
+  locale: string;
+  indirizzo: string;
+  cachet: number | null; // € concordati
+  service: boolean; // service audio/luci fornito dal locale/organizzatore
+  referente: string;
+  presaDa: string;
+  createdAt?: number;
+}
