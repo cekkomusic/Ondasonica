@@ -444,10 +444,10 @@ input[type="date"].input { color-scheme: dark; }
 .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .cal-title { margin: 0; text-transform: capitalize; }
 .cal-head .icon-btn { font-size: 1.4rem; color: var(--text); }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
 .cal-dow { text-align: center; font-size: 0.72rem; color: var(--muted); font-weight: 600; padding: 4px 0; }
 .cal-day {
-  position: relative; aspect-ratio: 1 / 1.05; min-height: 44px; border-radius: 10px; border: 1px solid var(--line);
+  position: relative; aspect-ratio: 1 / 1.1; min-width: 0; border-radius: 10px; border: 1px solid var(--line);
   background: rgba(255,255,255,0.02); padding: 4px 2px; display: flex; flex-direction: column; align-items: center; gap: 2px;
 }
 .cal-num { font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 0.92rem; }
@@ -481,3 +481,19 @@ input[type="date"].input { color-scheme: dark; }
 .toggle-indisp.on { color: #ff4d6d; border-color: #ff4d6d; background: rgba(255, 77, 109, 0.14); box-shadow: 0 0 18px -6px #ff4d6d; }
 .toggle-indisp.on .box { background: #ff4d6d; border-color: #ff4d6d; }
 .indisp-warn { margin: 0; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255, 77, 109, 0.5); background: rgba(255, 77, 109, 0.1); color: #ffb3c1; }
+
+/* Logo in Home */
+.hero-logo { display: flex; align-items: center; gap: 12px; }
+.hero-logo .logo { width: 118px; height: auto; flex: none; filter: drop-shadow(0 0 18px rgba(34, 228, 255, 0.25)) drop-shadow(0 0 22px rgba(255, 140, 58, 0.15)); }
+.seg.crew { border-style: dashed; }
+.crew-tag { display: block; font-size: 0.62rem; font-weight: 500; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.giorno-list li .who { width: 72px; }
+
+/* Schermi stretti: titolo, logo e menu proporzionati */
+.hero-logo .brand { font-size: clamp(1.9rem, 9.5vw, 2.6rem); }
+.hero-logo .logo { width: clamp(84px, 27vw, 120px); }
+@media (max-width: 380px) {
+  .nav-item { font-size: 0.55rem; letter-spacing: -0.02em; }
+  .nav-item svg { width: 22px; height: 22px; }
+}
+@media (min-width: 900px) { .hero-logo .logo { width: 170px; } }

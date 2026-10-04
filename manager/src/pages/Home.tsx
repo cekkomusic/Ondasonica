@@ -78,12 +78,15 @@ export default function Home() {
 
   return (
     <div className="page">
-      <header className="hero">
-        <p className="eyebrow">Stagione 2027</p>
-        <h1 className="brand">
-          Onda<span>sonica</span>
-        </h1>
-        <p className="muted">Booking, attività e spese della band</p>
+      <header className="hero hero-logo">
+        <div className="grow">
+          <p className="eyebrow">Stagione 2027</p>
+          <h1 className="brand">
+            Onda<span>sonica</span>
+          </h1>
+          <p className="muted">Booking, concerti e spese della band</p>
+        </div>
+        <img className="logo" src="/logo.png" alt="Logo OndaSonicA – Subsonica Tribute Band" width={360} height={303} />
       </header>
 
       {prossima && (

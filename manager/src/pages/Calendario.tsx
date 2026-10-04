@@ -9,6 +9,9 @@ import { today } from "../lib/format";
 
 const GIORNI = ["L", "M", "M", "G", "V", "S", "D"];
 
+// Collaboratori che seguono video e audio live: presenti nel calendario ma non nelle spese.
+const CREW = ["SILVANO", "MATTEO"];
+
 const leggi = <T,>(k: string, def: T): T => {
   try {
     return (localStorage.getItem(k) as T) ?? def;
@@ -18,7 +21,8 @@ const leggi = <T,>(k: string, def: T): T => {
 };
 
 export default function Calendario() {
-  const { partecipanti } = usePartecipanti();
+  const { partecipanti: membri } = usePartecipanti();
+  const partecipanti = useMemo(() => [...membri, ...CREW.filter((c) => !membri.includes(c))], [membri]);
   const [mese, setMese] = useState(() => today().slice(0, 7)); // YYYY-MM
   const [sel, setSel] = useState(today());
   const [io, setIo] = useState<string>(() => leggi("ondasonica.me", ""));
@@ -72,7 +76,7 @@ export default function Calendario() {
         <span className="field-label">Chi sei?</span>
         <div className="segmented io-picker">
           {partecipanti.map((p) => (
-            <button key={p} type="button" className={`seg ${io === p ? "on" : ""}`} onClick={() => setIo(p)}>
+            <button key={p} type="button" className={`seg ${io === p ? "on" : ""} ${CREW.includes(p) ? "crew" : ""}`} onClick={() => setIo(p)}>
               {p}
             </button>
           ))}
@@ -194,7 +198,10 @@ function Giorno({
           const imp = dati?.[p];
           return (
             <li key={p} className={`${imp?.indisponibile ? "indisp" : ""} ${p === io ? "me" : ""}`}>
-              <span className="who">{p}</span>
+              <span className="who">
+                {p}
+                {CREW.includes(p) && <small className="crew-tag">crew</small>}
+              </span>
               <span className="grow giorno-nota">
                 {imp?.indisponibile && <span className="badge-indisp">INDISPONIBILE</span>} {imp?.nota || (!imp ? <span className="muted">—</span> : "")}
               </span>
