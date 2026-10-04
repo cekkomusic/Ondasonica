@@ -43,7 +43,7 @@ export default function DatePrese() {
   return (
     <div className="page">
       <header className="page-head">
-        <h1>Concerti</h1>
+        <h1>Concerti fissati</h1>
         <p className="muted">
           {prossime.length} in programma{totCachet > 0 ? ` · ${euro(totCachet)} di cachet` : ""}
           {passate.length ? ` · ${passate.length} passate` : ""}

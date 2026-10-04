@@ -54,6 +54,8 @@ export default function Calendario() {
     return map;
   }, [concerti.data]);
 
+  const concertiMese = concerti.data.filter((c) => c.data.startsWith(mese)).sort((a, b) => a.data.localeCompare(b.data));
+
   if (cal.error) return <ErrorBox msg={cal.error} />;
 
   const dati = cal.data ?? {};
@@ -114,6 +116,7 @@ export default function Calendario() {
               >
                 <span className="cal-num">{Number(d.slice(8))}</span>
                 {live && <span className="cal-live">🎸</span>}
+                {live && <span className="cal-live-name">{live[0].locale}</span>}
                 <span className="cal-dots">
                   {indisp.map((p) => (
                     <i key={p} className="dot-red" />
@@ -135,6 +138,21 @@ export default function Calendario() {
           </span>
           <span>🎸 concerto</span>
         </div>
+        {concertiMese.length > 0 && (
+          <ul className="cal-concerti">
+            {concertiMese.map((c) => (
+              <li key={c.id}>
+                <button className={c.data === sel ? "on" : ""} onClick={() => setSel(c.data)}>
+                  <span className="cal-concerto-data">{Number(c.data.slice(8))}</span>
+                  <span className="grow">
+                    🎸 <strong>{c.locale}</strong>
+                    {c.indirizzo && <span className="muted small"> · {c.indirizzo}</span>}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {cal.loading ? (
