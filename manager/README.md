@@ -13,9 +13,10 @@ lead di locali/festival, attività, spese condivise e scheda tecnica.
 |---|---|
 | **Home** | Colpo d'occhio: % lead contattati, lead per priorità e per stato, attività aperte, spese da saldare, link ai documenti (strategia, EPK, template email). |
 | **Locali** | I 61 lead come card (tap per espandere). Filtri per priorità, regione, tipo, stato + ricerca libera. Modificabili: stato contatto, data ultimo contatto, note. Su schermi larghi c'è anche la vista **Tabella**. |
-| **Date prese** | Concerti confermati: data, locale, indirizzo, cachet concordato, service sì/no, referente, presa da. Card con "In programma" / "Passate", tabella su schermi larghi, link a Maps. La prossima data compare in Home. |
+| **Concerti** | Concerti confermati (ex "Date prese"): data, locale, indirizzo, cachet concordato, service sì/no, referente, presa da. Card con "In programma" / "Passate", tabella su schermi larghi, link a Maps. La prossima data compare in Home. |
+| **Calendario** | Calendario mensile condiviso: ognuno sceglie "Chi sei?", tocca un giorno, scrive cosa farà e può segnarsi **indisponibile** (in rosso), poi **Salva**. Nella griglia: pallino rosso = qualcuno indisponibile, pallino azzurro = impegno segnato, 🎸 = concerto. Quando si inserisce un nuovo concerto in un giorno in cui qualcuno è indisponibile, compare un avviso. |
 | **Scaletta** | Sotto-tab **Scaletta ufficiale** + una **Proposta** per ogni membro. Nella scaletta ufficiale l'ordine è di sola lettura (si cambiano solo i colori delle righe, toccando il numero); il tasto **+ Aggiungi brano** aggiunge un brano a tutte le scalette (ufficiale e proposte dei membri), come ultimo dei BIS. Nelle proposte personali: trascina ⠿ per spostare le righe, colori, aggiungi/togli brani e stacchi, poi **Salva** o **Rendi scaletta ufficiale** (copia la proposta nella scaletta ufficiale). Sotto ogni tab c'è il riquadro **Proposte nuovi pezzi**: nelle tab personali si scrive e si salva, sotto la scaletta ufficiale compare in automatico come "titolo proposta da NOME" (sola lettura). |
-| **Attività** | Log/checklist ordinato per data. Aggiungi attività, cambia stato, modifica descrizione/note, elimina. |
+| **Attività** (dalla Home) | Log/checklist ordinato per data. Aggiungi attività, cambia stato, modifica descrizione/note, elimina. |
 | **Spese** | Nuova spesa (descrizione, importo, data, chi l'ha inserita) → quota a testa calcolata su 5. Per ogni partecipante toggle pagato/non pagato + nota. Riepilogo "quanto deve ancora versare ciascuno". |
 | **Scheda tecnica** | Form a sezioni che rispecchia `data/scheda_tecnica.json`, salvataggio automatico campo per campo. |
 
@@ -58,7 +59,8 @@ firestore.rules  regole di sicurezza da pubblicare su Firebase
 ```
 
 Modello dati Firestore: `leads/{id}`, `attivita/{id}`, `spese/{id}`, `date/{id}`, `scalette/live`,
-`scalette/{MEMBRO}` (proposta + nuovi pezzi), `config/spese`,
+`scalette/{MEMBRO}` (proposta + nuovi pezzi), `config/calendario-YYYY-MM` (un documento per mese con gli
+impegni di ciascuno; sta in `config` così non serve aggiornare le regole), `config/spese`,
 `config/schedaTecnica`, `config/seed` (marcatore "seed già eseguito").
 
 ---

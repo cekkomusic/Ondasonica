@@ -437,3 +437,47 @@ input[type="date"].input { color-scheme: dark; }
 .badge.st-done, .badge.st-no, .badge.st-reply { color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); }
 .lead-table tr.passata { opacity: 0.55; }
 .next-gig h3 { margin: 4px 0 2px; font-size: 1.3rem; }
+
+/* ---------- Calendario ---------- */
+.io-picker { margin-top: 8px; }
+.cal-card { padding: 12px; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.cal-title { margin: 0; text-transform: capitalize; }
+.cal-head .icon-btn { font-size: 1.4rem; color: var(--text); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-dow { text-align: center; font-size: 0.72rem; color: var(--muted); font-weight: 600; padding: 4px 0; }
+.cal-day {
+  position: relative; aspect-ratio: 1 / 1.05; min-height: 44px; border-radius: 10px; border: 1px solid var(--line);
+  background: rgba(255,255,255,0.02); padding: 4px 2px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.cal-num { font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 0.92rem; }
+.cal-day.oggi .cal-num { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+.cal-day.indisp { background: rgba(255, 77, 109, 0.08); border-color: rgba(255, 77, 109, 0.35); }
+.cal-day.mio-indisp { background: rgba(255, 77, 109, 0.28); border-color: #ff4d6d; }
+.cal-day.live { box-shadow: inset 0 0 0 1px var(--magenta), 0 0 12px -4px var(--magenta); }
+.cal-day.sel { outline: 2px solid var(--cyan); outline-offset: 1px; box-shadow: 0 0 16px -4px var(--cyan); }
+.cal-live { position: absolute; top: 1px; right: 2px; font-size: 0.6rem; }
+.cal-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; max-width: 100%; }
+.dot-red, .dot-note { display: inline-block; width: 6px; height: 6px; border-radius: 50%; }
+.dot-red { background: #ff4d6d; box-shadow: 0 0 6px #ff4d6d; }
+.dot-note { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
+.cal-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+.cal-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.giorno-title { text-transform: capitalize; }
+.giorno-live { margin: 0 0 10px; color: #ffd0ee; }
+.giorno-list { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.giorno-list li { display: flex; gap: 10px; align-items: baseline; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: rgba(0,0,0,0.2); font-size: 0.9rem; }
+.giorno-list li .who { width: 64px; flex: none; font-size: 0.8rem; }
+.giorno-list li.me { border-color: rgba(34, 228, 255, 0.35); }
+.giorno-list li.indisp { border-color: rgba(255, 77, 109, 0.5); background: rgba(255, 77, 109, 0.1); }
+.giorno-nota { overflow-wrap: anywhere; }
+.badge-indisp { color: #ff4d6d; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.06em; }
+.giorno-edit { display: flex; flex-direction: column; gap: 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+.toggle-indisp {
+  display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 14px; border-radius: 14px; text-align: left;
+  border: 1px solid var(--line-2); background: rgba(255,255,255,0.03); color: var(--muted); font-weight: 600;
+}
+.toggle-indisp .box { width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--line-2); display: grid; place-items: center; font-size: 0.8rem; color: #fff; }
+.toggle-indisp.on { color: #ff4d6d; border-color: #ff4d6d; background: rgba(255, 77, 109, 0.14); box-shadow: 0 0 18px -6px #ff4d6d; }
+.toggle-indisp.on .box { background: #ff4d6d; border-color: #ff4d6d; }
+.indisp-warn { margin: 0; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255, 77, 109, 0.5); background: rgba(255, 77, 109, 0.1); color: #ffb3c1; }

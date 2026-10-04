@@ -87,14 +87,14 @@ export default function Home() {
       </header>
 
       {prossima && (
-        <Link to="/date" className="card glow-card next-gig">
-          <p className="eyebrow">Prossima data</p>
+        <Link to="/concerti" className="card glow-card next-gig">
+          <p className="eyebrow">Prossimo concerto</p>
           <h3>{prossima.locale}</h3>
           <p className="muted small">
             {new Date(prossima.data + "T12:00:00").toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}
             {prossima.indirizzo ? ` · ${prossima.indirizzo}` : ""}
           </p>
-          {prossimeDate.length > 1 && <p className="muted tiny">+ altre {prossimeDate.length - 1} in programma</p>}
+          {prossimeDate.length > 1 && <p className="muted tiny">+ altri {prossimeDate.length - 1} in programma</p>}
         </Link>
       )}
 
@@ -224,6 +224,15 @@ export default function Home() {
           <p className="muted small">{spese.data.length ? "Tutti in pari ✓" : "Nessuna spesa registrata."}</p>
         )}
       </section>
+
+      <Link to="/attivita" className="card doc-link">
+        <span>✅</span>
+        <div className="grow">
+          <strong>Attività</strong>
+          <p className="muted small">Cosa è stato fatto e cosa resta da fare</p>
+        </div>
+        <span>→</span>
+      </Link>
 
       <Link to="/documenti" className="card doc-link">
         <span>📄</span>
