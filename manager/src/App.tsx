@@ -7,6 +7,7 @@ import { tick } from "./lib/haptics";
 
 const Home = lazy(() => import("./pages/Home"));
 const Leads = lazy(() => import("./pages/Leads"));
+const Calendario = lazy(() => import("./pages/Calendario"));
 const Attivita = lazy(() => import("./pages/Attivita"));
 const Spese = lazy(() => import("./pages/Spese"));
 const Scheda = lazy(() => import("./pages/Scheda"));
@@ -17,11 +18,11 @@ const Documenti = lazy(() => import("./pages/Documenti"));
 const NAV = [
   { to: "/", label: "Home", icon: <IconHome /> },
   { to: "/locali", label: "Locali", icon: <IconPin /> },
-  { to: "/date", label: "Date", icon: <IconCalendar /> },
+  { to: "/concerti", label: "Concerti", icon: <IconMic /> },
+  { to: "/calendario", label: "Calendario", icon: <IconCalendar /> },
   { to: "/scaletta", label: "Scaletta", icon: <IconMusic /> },
   { to: "/spese", label: "Spese", icon: <IconEuro /> },
   { to: "/scheda", label: "Scheda", icon: <IconSliders /> },
-  { to: "/attivita", label: "Attività", icon: <IconCheck /> },
 ];
 
 export default function App() {
@@ -65,7 +66,9 @@ function Shell() {
             <Route path="/spese" element={<Spese />} />
             <Route path="/scheda" element={<Scheda />} />
             <Route path="/scaletta" element={<Scaletta />} />
+            <Route path="/concerti" element={<DatePrese />} />
             <Route path="/date" element={<DatePrese />} />
+            <Route path="/calendario" element={<Calendario />} />
             <Route path="/documenti" element={<Documenti />} />
             <Route path="/documenti/:id" element={<Documenti />} />
             <Route path="*" element={<Home />} />
@@ -168,6 +171,14 @@ function IconPin() {
     </Svg>
   );
 }
+function IconMic() {
+  return (
+    <Svg>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" />
+    </Svg>
+  );
+}
 function IconCalendar() {
   return (
     <Svg>
@@ -183,14 +194,6 @@ function IconMusic() {
       <path d="M9 18V5.5l11-2V16" />
       <circle cx="6.5" cy="18" r="2.5" />
       <circle cx="17.5" cy="16" r="2.5" />
-    </Svg>
-  );
-}
-function IconCheck() {
-  return (
-    <Svg>
-      <rect x="4" y="4" width="16" height="16" rx="4" />
-      <path d="m8.5 12 2.5 2.5 4.5-5" />
     </Svg>
   );
 }

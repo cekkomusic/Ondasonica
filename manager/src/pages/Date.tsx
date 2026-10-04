@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
-import { useCollection } from "../lib/hooks";
+import { useCollection, useDocument } from "../lib/hooks";
+import { meseId, type MeseCalendario } from "../lib/calendario";
 import type { DataPresa } from "../lib/types";
 import { usePartecipanti } from "./Spese";
 import { SyncedField } from "../components/SyncedField";
@@ -42,7 +43,7 @@ export default function DatePrese() {
   return (
     <div className="page">
       <header className="page-head">
-        <h1>Date prese</h1>
+        <h1>Concerti fissati</h1>
         <p className="muted">
           {prossime.length} in programma{totCachet > 0 ? ` · ${euro(totCachet)} di cachet` : ""}
           {passate.length ? ` · ${passate.length} passate` : ""}
@@ -53,7 +54,7 @@ export default function DatePrese() {
         <NuovaData partecipanti={partecipanti} onDone={() => setAdding(false)} />
       ) : (
         <button className="btn primary block" onClick={() => setAdding(true)}>
-          + Nuova data
+          + Nuovo concerto
         </button>
       )}
 
@@ -69,7 +70,7 @@ export default function DatePrese() {
         </div>
       </div>
 
-      {data.length === 0 && !adding && <p className="empty">Nessuna data ancora. La prima arriverà 🤘</p>}
+      {data.length === 0 && !adding && <p className="empty">Nessun concerto ancora. Il primo arriverà 🤘</p>}
 
       {vista === "tabella" ? (
         <TabellaDate righe={[...prossime, ...passate]} oggi={oggi} />
@@ -164,10 +165,10 @@ function DataCard({
           <button
             className="btn danger ghost"
             onClick={() => {
-              if (confirm(`Eliminare la data "${d.locale}" del ${dataIt(d.data)}?`)) save(deleteDoc(ref), "Data eliminata");
+              if (confirm(`Eliminare il concerto "${d.locale}" del ${dataIt(d.data)}?`)) save(deleteDoc(ref), "Concerto eliminato");
             }}
           >
-            Elimina data
+            Elimina concerto
           </button>
         </div>
       )}
@@ -205,6 +206,9 @@ function NuovaData({ partecipanti, onDone }: { partecipanti: string[]; onDone: (
   const [f, setF] = useState({ data: "", locale: "", indirizzo: "", cachet: "", service: false, referente: "", presaDa: "" });
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => setF((x) => ({ ...x, [k]: v }));
   const valido = f.data && f.locale.trim();
+  // Avvisa se qualcuno si è segnato indisponibile nel Calendario per quel giorno.
+  const cal = useDocument<MeseCalendario>("config", meseId(f.data || today()));
+  const indisponibili = f.data ? Object.entries(cal.data?.[f.data] ?? {}).filter(([, i]) => i.indisponibile).map(([m]) => m) : [];
 
   return (
     <form
@@ -223,16 +227,19 @@ function NuovaData({ partecipanti, onDone }: { partecipanti: string[]; onDone: (
             presaDa: f.presaDa,
             createdAt: Date.now(),
           }),
-          "Data aggiunta 🎉",
+          "Concerto aggiunto 🎉",
         );
         onDone();
       }}
     >
-      <h3>Nuova data</h3>
+      <h3>Nuovo concerto</h3>
       <label className="field">
         <span className="field-label">Data *</span>
         <input className="input" type="date" min={today()} value={f.data} onChange={(e) => set("data", e.target.value)} required />
       </label>
+      {indisponibili.length > 0 && (
+        <p className="indisp-warn small">⚠️ In questo giorno si sono segnati indisponibili: {indisponibili.join(", ")}</p>
+      )}
       <label className="field">
         <span className="field-label">Locale *</span>
         <input className="input" value={f.locale} onChange={(e) => set("locale", e.target.value)} required />

@@ -78,23 +78,26 @@ export default function Home() {
 
   return (
     <div className="page">
-      <header className="hero">
-        <p className="eyebrow">Stagione 2027</p>
-        <h1 className="brand">
-          Onda<span>sonica</span>
-        </h1>
-        <p className="muted">Booking, attività e spese della band</p>
+      <header className="hero hero-logo">
+        <div className="grow">
+          <p className="eyebrow">Stagione 2027</p>
+          <h1 className="brand">
+            Onda<span>sonica</span>
+          </h1>
+          <p className="muted">Booking, concerti e spese della band</p>
+        </div>
+        <img className="logo" src="/logo.png" alt="Logo OndaSonicA – Subsonica Tribute Band" width={360} height={303} />
       </header>
 
       {prossima && (
-        <Link to="/date" className="card glow-card next-gig">
-          <p className="eyebrow">Prossima data</p>
+        <Link to="/concerti" className="card glow-card next-gig">
+          <p className="eyebrow">Prossimo concerto</p>
           <h3>{prossima.locale}</h3>
           <p className="muted small">
             {new Date(prossima.data + "T12:00:00").toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}
             {prossima.indirizzo ? ` · ${prossima.indirizzo}` : ""}
           </p>
-          {prossimeDate.length > 1 && <p className="muted tiny">+ altre {prossimeDate.length - 1} in programma</p>}
+          {prossimeDate.length > 1 && <p className="muted tiny">+ altri {prossimeDate.length - 1} in programma</p>}
         </Link>
       )}
 
@@ -224,6 +227,15 @@ export default function Home() {
           <p className="muted small">{spese.data.length ? "Tutti in pari ✓" : "Nessuna spesa registrata."}</p>
         )}
       </section>
+
+      <Link to="/attivita" className="card doc-link">
+        <span>✅</span>
+        <div className="grow">
+          <strong>Attività</strong>
+          <p className="muted small">Cosa è stato fatto e cosa resta da fare</p>
+        </div>
+        <span>→</span>
+      </Link>
 
       <Link to="/documenti" className="card doc-link">
         <span>📄</span>
