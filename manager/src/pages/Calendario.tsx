@@ -4,7 +4,20 @@ import type { DataPresa } from "../lib/types";
 import { usePartecipanti } from "./Spese";
 import { useSave } from "../components/Toast";
 import { ErrorBox, Loading } from "../components/States";
-import { isoDay, meseId, salvaImpegno, type Impegno, type MeseCalendario } from "../lib/calendario";
+import {
+  aggiungiEventoBand,
+  BAND,
+  eventiBand,
+  isoDay,
+  meseId,
+  rimuoviEventoBand,
+  salvaImpegno,
+  TIPI_EVENTO,
+  type EventoBand,
+  type Impegno,
+  type MeseCalendario,
+  type TipoEvento,
+} from "../lib/calendario";
 import { today } from "../lib/format";
 
 const GIORNI = ["L", "M", "M", "G", "V", "S", "D"];
@@ -31,7 +44,7 @@ export default function Calendario() {
 
   useEffect(() => {
     try {
-      if (io) localStorage.setItem("ondasonica.me", io);
+      if (io && io !== BAND) localStorage.setItem("ondasonica.me", io); // BAND non è una persona (non va nelle spese)
     } catch {
       /* ignorato */
     }
@@ -54,7 +67,15 @@ export default function Calendario() {
     return map;
   }, [concerti.data]);
 
-  const concertiMese = concerti.data.filter((c) => c.data.startsWith(mese)).sort((a, b) => a.data.localeCompare(b.data));
+  const concertiMese = concerti.data.filter((c) => c.data.startsWith(mese));
+  const datiMese = cal.data ?? {};
+  // Concerti + eventi band del mese, in ordine di data.
+  const eventiMese = [
+    ...concertiMese.map((c) => ({ key: c.id, data: c.data, cls: "", icona: "🎸", titolo: c.locale, sub: c.indirizzo })),
+    ...Object.entries(datiMese).flatMap(([d, g]) =>
+      eventiBand(g).map((e) => ({ key: e.id, data: d, cls: `band ev-${e.tipo}`, icona: TIPI_EVENTO[e.tipo].icona, titolo: TIPI_EVENTO[e.tipo].label, sub: e.nota })),
+    ),
+  ].sort((a, b) => a.data.localeCompare(b.data));
 
   if (cal.error) return <ErrorBox msg={cal.error} />;
 
@@ -77,6 +98,9 @@ export default function Calendario() {
       <section className="card">
         <span className="field-label">Chi sei?</span>
         <div className="segmented io-picker">
+          <button type="button" className={`seg band-seg ${io === BAND ? "on" : ""}`} onClick={() => setIo(BAND)}>
+            🎸 BAND
+          </button>
           {partecipanti.map((p) => (
             <button key={p} type="button" className={`seg ${io === p ? "on" : ""} ${CREW.includes(p) ? "crew" : ""}`} onClick={() => setIo(p)}>
               {p}
@@ -108,6 +132,7 @@ export default function Calendario() {
             const note = partecipanti.filter((p) => giorno[p] && !giorno[p].indisponibile && giorno[p].nota);
             const mioIndisp = io && giorno[io]?.indisponibile;
             const live = concertiPerGiorno[d];
+            const tipiBand = [...new Set(eventiBand(giorno).map((e) => e.tipo))];
             return (
               <button
                 key={d}
@@ -117,6 +142,13 @@ export default function Calendario() {
                 <span className="cal-num">{Number(d.slice(8))}</span>
                 {live && <span className="cal-live">🎸</span>}
                 {live && <span className="cal-live-name">{live[0].locale}</span>}
+                {tipiBand.length > 0 && (
+                  <span className="cal-band">
+                    {tipiBand.map((t) => (
+                      <span key={t}>{TIPI_EVENTO[t].icona}</span>
+                    ))}
+                  </span>
+                )}
                 <span className="cal-dots">
                   {indisp.map((p) => (
                     <i key={p} className="dot-red" />
@@ -137,16 +169,18 @@ export default function Calendario() {
             <i className="dot-note" /> impegno segnato
           </span>
           <span>🎸 concerto</span>
+          <span>🥁 prove</span>
+          <span>🤝 passaggio locale</span>
         </div>
-        {concertiMese.length > 0 && (
+        {eventiMese.length > 0 && (
           <ul className="cal-concerti">
-            {concertiMese.map((c) => (
-              <li key={c.id}>
-                <button className={c.data === sel ? "on" : ""} onClick={() => setSel(c.data)}>
-                  <span className="cal-concerto-data">{Number(c.data.slice(8))}</span>
+            {eventiMese.map((e) => (
+              <li key={e.key}>
+                <button className={`${e.data === sel ? "on" : ""} ${e.cls}`} onClick={() => setSel(e.data)}>
+                  <span className="cal-concerto-data">{Number(e.data.slice(8))}</span>
                   <span className="grow">
-                    🎸 <strong>{c.locale}</strong>
-                    {c.indirizzo && <span className="muted small"> · {c.indirizzo}</span>}
+                    {e.icona} <strong>{e.titolo}</strong>
+                    {e.sub && <span className="muted small"> · {e.sub}</span>}
                   </span>
                 </button>
               </li>
@@ -165,6 +199,7 @@ export default function Calendario() {
           partecipanti={partecipanti}
           io={io}
           concerti={concertiPerGiorno[sel] ?? []}
+          eventi={eventiBand(dati[sel])}
         />
       )}
     </div>
@@ -177,12 +212,14 @@ function Giorno({
   partecipanti,
   io,
   concerti,
+  eventi,
 }: {
   giorno: string;
   dati?: Record<string, Impegno>;
   partecipanti: string[];
   io: string;
   concerti: DataPresa[];
+  eventi: EventoBand[];
 }) {
   const save = useSave();
   const mio = dati?.[io];
@@ -211,6 +248,32 @@ function Giorno({
         </p>
       ))}
 
+      {eventi.length > 0 && (
+        <ul className="band-eventi">
+          {eventi.map((e) => (
+            <li key={e.id} className={`band-ev ev-${e.tipo}`}>
+              <span className="band-ev-icona">{TIPI_EVENTO[e.tipo].icona}</span>
+              <span className="grow">
+                <strong>{TIPI_EVENTO[e.tipo].label}</strong>
+                {e.nota && <span className="band-ev-nota">{e.nota}</span>}
+              </span>
+              {io === BAND && (
+                <button
+                  className="icon-btn"
+                  aria-label={`Elimina ${TIPI_EVENTO[e.tipo].label}`}
+                  onClick={() => {
+                    if (confirm(`Eliminare "${TIPI_EVENTO[e.tipo].label}${e.nota ? " – " + e.nota : ""}"?`))
+                      save(rimuoviEventoBand(giorno, e), "Evento eliminato");
+                  }}
+                >
+                  ✕
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
       <ul className="giorno-list">
         {partecipanti.map((p) => {
           const imp = dati?.[p];
@@ -229,7 +292,9 @@ function Giorno({
       </ul>
 
       {!io ? (
-        <p className="hint-box small">Scegli chi sei qui sopra per segnare i tuoi impegni.</p>
+        <p className="hint-box small">Scegli chi sei qui sopra per segnare i tuoi impegni (o BAND per prove e passaggi nei locali).</p>
+      ) : io === BAND ? (
+        <NuovoEventoBand giorno={giorno} />
       ) : (
         <div className="giorno-edit">
           <span className="field-label">Il mio giorno · {io}</span>
@@ -254,5 +319,39 @@ function Giorno({
         </div>
       )}
     </section>
+  );
+}
+
+function NuovoEventoBand({ giorno }: { giorno: string }) {
+  const save = useSave();
+  const [tipo, setTipo] = useState<TipoEvento>("prove");
+  const [nota, setNota] = useState("");
+  return (
+    <div className="giorno-edit">
+      <span className="field-label">Nuovo evento band</span>
+      <div className="tipo-evento">
+        {(Object.keys(TIPI_EVENTO) as TipoEvento[]).map((t) => (
+          <button key={t} type="button" className={`tipo-btn ev-${t} ${tipo === t ? "on" : ""}`} onClick={() => setTipo(t)}>
+            <span className="tipo-icona">{TIPI_EVENTO[t].icona}</span>
+            {TIPI_EVENTO[t].label}
+          </button>
+        ))}
+      </div>
+      <input
+        className="input"
+        value={nota}
+        onChange={(e) => setNota(e.target.value)}
+        placeholder={tipo === "prove" ? "Es. ore 21, sala prove" : "Es. ore 18, giro locali a Chieri e Rivoli"}
+      />
+      <button
+        className="btn primary block"
+        onClick={() => {
+          save(aggiungiEventoBand(giorno, tipo, nota), `${TIPI_EVENTO[tipo].label} salvato`);
+          setNota("");
+        }}
+      >
+        Salva evento
+      </button>
+    </div>
   );
 }
