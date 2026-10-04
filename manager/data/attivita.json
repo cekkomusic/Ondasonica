@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ricerca-mercato-2026",
+    "titolo": "Ricerca mercato: eventi/locali con tribute band primavera-estate 2026",
+    "descrizione": "Ricerca sistematica per regione (Piemonte/VdA/Liguria, Nord-Est, Centro Italia) e per circuito (concorrenti diretti, agenzie di booking, festival specializzati) di locali, sagre, festival e feste patronali che hanno ospitato tribute/cover band nel 2026.",
+    "stato": "Completata",
+    "data": "2026-09-16",
+    "note": "Risultato: 61 lead catalogati con priorità geografica."
+  },
+  {
+    "id": "lista-lead-excel",
+    "titolo": "Catalogazione lead in foglio Excel",
+    "descrizione": "61 lead organizzati per priorità (Alta/Media-Alta/Media/Info-Concorrenza) con contatti, tipo, periodo 2026 rilevato e fonte.",
+    "stato": "Completata",
+    "data": "2026-09-16",
+    "note": "File: Lead_Locali_Ondasonica_2027.xlsx — importato in questa app come data/leads.json."
+  },
+  {
+    "id": "strategia-2027",
+    "titolo": "Documento di strategia procacciamento date 2027",
+    "descrizione": "Analisi dei pattern emersi dalla ricerca, i tre canali da lavorare (piattaforme/directory, agenzie di booking, contatto diretto), tempistiche consigliate e prossimi passi.",
+    "stato": "Completata",
+    "data": "2026-09-16",
+    "note": "Vedi docs/strategia-procacciamento-2027.md"
+  },
+  {
+    "id": "epk-bozza",
+    "titolo": "Bozza EPK / presentazione band",
+    "descrizione": "One-pager di presentazione di Ondasonica con bio, repertorio, rider tecnico, materiale e condizioni — con segnaposto da completare con dati reali.",
+    "stato": "Da completare",
+    "data": "2026-09-16",
+    "note": "Mancano: formazione/membri, foto, video, cachet, rider definitivo. Vedi docs/epk-ondasonica.md e il menu Scheda Tecnica."
+  },
+  {
+    "id": "email-template",
+    "titolo": "Bozze email di presentazione per i lead",
+    "descrizione": "Quattro template (comuni, pro loco/sagre, agenzie di booking, festival specializzati) pronti da personalizzare e inviare.",
+    "stato": "Completata",
+    "data": "2026-09-16",
+    "note": "Vedi docs/email-outreach-templates.md"
+  },
+  {
+    "id": "webapp-handoff",
+    "titolo": "Trasformazione in web app condivisa",
+    "descrizione": "Export di dati e istruzioni per costruire una web app mobile con Claude Code: tabella lead, tracking attività, menu spese, scheda tecnica.",
+    "stato": "In corso",
+    "data": "2026-10-03",
+    "note": "Questo pacchetto di export."
+  }
+]

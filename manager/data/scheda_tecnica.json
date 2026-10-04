@@ -1,0 +1,41 @@
+{
+  "bandNome": "Ondasonica",
+  "aggiornato": null,
+  "formazione": [],
+  "stagePlot": {
+    "descrizione": "",
+    "immagineUrl": ""
+  },
+  "backline": {
+    "batteria": "",
+    "basso": "",
+    "chitarre": "",
+    "tastiere": "",
+    "altro": ""
+  },
+  "audio": {
+    "canaliRichiesti": "",
+    "microfoniRichiesti": "",
+    "monitoraggio": "",
+    "note": ""
+  },
+  "luci": {
+    "richiesteSpeciali": "",
+    "note": ""
+  },
+  "visualsProiezioni": {
+    "requisitiTecnici": "",
+    "schermoMinimo": "",
+    "note": ""
+  },
+  "alimentazioneElettrica": {
+    "potenzaRichiesta": "",
+    "note": ""
+  },
+  "tempi": {
+    "montaggio": "",
+    "soundcheck": "",
+    "smontaggio": ""
+  },
+  "noteGenerali": ""
+}
