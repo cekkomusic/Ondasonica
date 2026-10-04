@@ -98,22 +98,22 @@ npm install
 npm run dev          # apre su http://localhost:5173 (anche da telefono sulla stessa Wi-Fi: usa l'IP mostrato)
 ```
 
-## 3. Importare i dati la prima volta (seed)
+## 3. Importare i dati la prima volta
 
-Dopo aver creato `.env` e pubblicato le regole:
+**Modo più semplice (senza computer):** dopo il deploy (punto 4) apri il link dell'app. Se il database è vuoto
+compare la schermata **"Database vuoto"** con il tasto **Importa dati iniziali**: premilo una volta e l'app
+carica i 61 lead, le attività, la scaletta ufficiale, la configurazione spese e la scheda tecnica vuota.
+Il tasto sparisce da solo quando i dati ci sono.
+
+**In alternativa da computer** (dopo aver creato `.env` e pubblicato le regole):
 
 ```bash
 npm run seed
 ```
 
-Carica in Firestore i 61 lead, le attività, la configurazione spese, la scheda tecnica vuota e la scaletta
-ufficiale.
-**Va eseguito una sola volta**: se il database è già popolato lo script si ferma da solo, così non
-sovrascrive le modifiche fatte dalla band (unica eccezione: se manca la scaletta ufficiale, la
-aggiunge). Non è collegato al deploy.
-
-> Se avevi già pubblicato le regole prima dell'aggiunta di Scaletta e Date prese, ripubblica `firestore.rules`
-> (ora include anche `scalette` e `date`), altrimenti quelle sezioni non riescono a salvare.
+Fa la stessa cosa del tasto. In entrambi i casi l'import avviene **una sola volta**: se il database è già
+popolato si ferma, così non sovrascrive le modifiche fatte dalla band (unica eccezione dello script: se manca
+la scaletta ufficiale, la aggiunge). Non è collegato al deploy.
 
 Per reimportare tutto da zero (⚠️ **cancella** stati, note e date inseriti nell'app su lead/attività/scheda;
 le spese aggiunte nell'app non vengono toccate):
@@ -122,8 +122,14 @@ le spese aggiunte nell'app non vengono toccate):
 npm run seed:force
 ```
 
+> Se avevi già pubblicato le regole prima dell'aggiunta di Scaletta e Date prese, ripubblica `firestore.rules`
+> (ora include anche `scalette` e `date`), altrimenti quelle sezioni non riescono a salvare.
+
 ## 4. Deploy su Vercel (consigliato)
 
+0. Il codice dell'app deve stare sul branch principale (`main`) del repository: Vercel pubblica quello.
+   Se l'app è ancora su un altro branch, uniscila a `main` (su GitHub: **Pull requests → New pull request**,
+   scegli il branch dell'app → **Create pull request → Merge pull request**).
 1. Vai su <https://vercel.com> → accedi con GitHub → **Add New → Project** → importa il repository.
 2. **Root Directory: `manager`** (importante: l'app sta in questa sottocartella). Framework: Vite
    (rilevato in automatico; build `npm run build`, output `dist`).

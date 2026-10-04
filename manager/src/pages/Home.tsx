@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
-import { useCollection } from "../lib/hooks";
+import { useState } from "react";
+import { useCollection, useDocument } from "../lib/hooks";
+import { importaDatiIniziali } from "../lib/seed";
+import { useSave } from "../components/Toast";
 import { PRIORITA, STATI_CONTATTO, type Attivita, type DataPresa, type Lead, type Spesa } from "../lib/types";
 import { attivitaClass, prioClass, statoClass } from "../components/Badges";
 import { dataIt, euro, today } from "../lib/format";
@@ -12,8 +15,42 @@ export default function Home() {
   const spese = useCollection<Spesa>("spese");
   const date = useCollection<DataPresa>("date");
   const { partecipanti } = usePartecipanti();
+  const seed = useDocument<{ at: string }>("config", "seed");
+  const save = useSave();
+  const [importing, setImporting] = useState(false);
 
-  if (leads.loading || att.loading || spese.loading || date.loading) return <Loading />;
+  if (!seed.loading && !seed.data && !seed.error)
+    return (
+      <div className="page">
+        <header className="hero">
+          <p className="eyebrow">Primo avvio</p>
+          <h1 className="brand">
+            Onda<span>sonica</span>
+          </h1>
+        </header>
+        <div className="card glow-card form-card">
+          <h3>Database vuoto</h3>
+          <p className="small">
+            Il collegamento a Firebase funziona, ma il database non contiene ancora dati. Premi il tasto per caricare i 61 locali,
+            le attività, la scaletta ufficiale, la configurazione spese e la scheda tecnica vuota. Va fatto una sola volta.
+          </p>
+          <button
+            className="btn primary block"
+            disabled={importing}
+            onClick={() => {
+              setImporting(true);
+              const p = importaDatiIniziali();
+              save(p, "Dati importati 🎉");
+              p.catch(() => setImporting(false));
+            }}
+          >
+            {importing ? "Importazione in corso…" : "Importa dati iniziali"}
+          </button>
+        </div>
+      </div>
+    );
+
+  if (seed.loading || leads.loading || att.loading || spese.loading || date.loading) return <Loading />;
 
   const oggi = today();
   const prossimeDate = date.data.filter((d) => d.data >= oggi).sort((a, b) => a.data.localeCompare(b.data));
