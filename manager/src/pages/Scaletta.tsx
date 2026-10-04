@@ -87,7 +87,7 @@ export default function Scaletta() {
 
       <div className="chips sub-tabs" data-noswipe role="tablist">
         <button role="tab" aria-selected={tab === LIVE} className={`chip live-tab ${tab === LIVE ? "on" : ""}`} onClick={() => cambiaTab(LIVE)}>
-          ● Prossimo live
+          ● Scaletta ufficiale
         </button>
         {partecipanti.map((p) => (
           <button role="tab" aria-selected={tab === p} key={p} className={`chip ${tab === p ? "on" : ""}`} onClick={() => cambiaTab(p)}>
@@ -115,7 +115,7 @@ export default function Scaletta() {
   );
 }
 
-/* ---------------- PROSSIMO LIVE ---------------- */
+/* ---------------- SCALETTA UFFICIALE ---------------- */
 
 function LiveView({ live, docs }: { live?: ScalettaDoc; docs: ScalettaDoc[] }) {
   const save = useSave();
@@ -124,7 +124,7 @@ function LiveView({ live, docs }: { live?: ScalettaDoc; docs: ScalettaDoc[] }) {
   if (!live?.righe)
     return (
       <div className="card">
-        <p>La scaletta del prossimo live non è ancora nel database.</p>
+        <p>La scaletta ufficiale non è ancora nel database.</p>
         <button
           className="btn primary"
           onClick={() => save(setDoc(ref, { righe: seedRighe(), aggiornato: new Date().toISOString(), origine: "" }, { merge: true }), "Scaletta caricata")}
@@ -135,6 +135,24 @@ function LiveView({ live, docs }: { live?: ScalettaDoc; docs: ScalettaDoc[] }) {
     );
 
   const righe = live.righe;
+
+  // Aggiunge il brano alla scaletta ufficiale e a tutte le proposte già salvate dei membri.
+  const aggiungiOvunque = (titolo: string) => {
+    const t = titolo.trim().toUpperCase();
+    if (!t) return false;
+    if (righe.some((r) => r.tipo === "brano" && r.titolo === t) && !confirm(`"${t}" è già in scaletta. Aggiungerlo comunque?`)) return false;
+    const riga: RigaScaletta = { id: newId(), tipo: "brano", titolo: t, colore: "" };
+    const now = new Date().toISOString();
+    const b = writeBatch(db());
+    b.update(ref, { righe: inserisciNeiBis(righe, riga), aggiornato: now });
+    for (const d of docs) {
+      if (d.id === LIVE || !d.righe) continue; // chi non ha salvato una proposta parte comunque dalla ufficiale
+      b.update(doc(db(), "scalette", d.id), { righe: inserisciNeiBis(d.righe, riga) });
+    }
+    save(b.commit(), `${t} aggiunto a tutte le scalette`);
+    return true;
+  };
+
   const proposte = docs
     .filter((d) => d.id !== LIVE)
     .flatMap((d) => (d.nuoviPezzi ?? []).map((p) => ({ ...p, membro: d.id })))
@@ -147,6 +165,7 @@ function LiveView({ live, docs }: { live?: ScalettaDoc; docs: ScalettaDoc[] }) {
         {live.aggiornato ? ` · aggiornata il ${dataIt(live.aggiornato)}` : ""}
         {live.origine ? ` · dalla proposta di ${live.origine}` : ""}
       </p>
+      <AggiungiBranoUfficiale onAdd={aggiungiOvunque} />
       <ListaScaletta
         righe={righe}
         editable={false}
@@ -173,6 +192,15 @@ function LiveView({ live, docs }: { live?: ScalettaDoc; docs: ScalettaDoc[] }) {
       </section>
     </>
   );
+}
+
+/** Inserisce la riga come ultimo brano del blocco BIS (o in fondo se non c'è un BIS). */
+export function inserisciNeiBis(righe: RigaScaletta[], riga: RigaScaletta): RigaScaletta[] {
+  const bis = righe.findIndex((r) => r.tipo === "sezione" && /^bis/i.test(r.titolo.trim()));
+  if (bis < 0) return [...righe, riga];
+  let j = bis + 1;
+  while (j < righe.length && righe[j].tipo === "brano") j++;
+  return [...righe.slice(0, j), riga, ...righe.slice(j)];
 }
 
 const numBrani = (r: RigaScaletta[]) => Object.values(numerazione(r)).filter((n) => n !== null).length;
@@ -202,9 +230,16 @@ function PropostaView({
   };
 
   // Se nessuno sta modificando, si riallinea alle modifiche arrivate da altri telefoni.
+  // Se invece ci sono modifiche in corso, aggiunge comunque i brani nuovi arrivati
+  // (es. "+ Aggiungi brano" dalla scaletta ufficiale) senza perdere il lavoro locale.
   const remoteKey = JSON.stringify(remote);
+  const prevRemote = useRef(remote);
   useEffect(() => {
-    if (!dirty) setDraft(remote);
+    const prevIds = new Set(prevRemote.current.map((r) => r.id));
+    prevRemote.current = remote;
+    if (!dirty) return setDraft(remote);
+    const nuovi = remote.filter((r) => !prevIds.has(r.id));
+    if (nuovi.length) setDraft((d) => nuovi.reduce((acc, r) => (acc.some((x) => x.id === r.id) ? acc : inserisciNeiBis(acc, r)), d));
   }, [remoteKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const update = (next: RigaScaletta[]) => {
@@ -220,12 +255,12 @@ function PropostaView({
   };
 
   const rendiLive = () => {
-    if (!confirm(`Sostituire la scaletta PROSSIMO LIVE con la proposta di ${membro}?`)) return;
+    if (!confirm(`Sostituire la SCALETTA UFFICIALE con la proposta di ${membro}?`)) return;
     const now = new Date().toISOString();
     const b = writeBatch(db());
     b.set(ref, { righe: draft, aggiornato: now }, { merge: true });
     b.set(doc(db(), "scalette", LIVE), { righe: draft, aggiornato: now, origine: membro }, { merge: true });
-    save(b.commit(), "Ora è il prossimo live ✓");
+    save(b.commit(), "Ora è la scaletta ufficiale ✓");
     tick([15, 40, 15]);
     onPromossa();
   };
@@ -234,7 +269,7 @@ function PropostaView({
     <>
       <p className="muted small">
         {!mio?.righe
-          ? "Partenza: copia del prossimo live. Trascina ⠿ per riordinare, poi SALVA."
+          ? "Partenza: copia della scaletta ufficiale. Trascina ⠿ per riordinare, poi SALVA."
           : `Salvata il ${dataIt(mio.aggiornato)} · trascina ⠿ per riordinare`}
       </p>
 
@@ -254,13 +289,50 @@ function PropostaView({
             Salva
           </button>
           <button className="btn live-btn" onClick={rendiLive} disabled={draft.length === 0}>
-            Rendi prossimo live
+            Rendi scaletta ufficiale
           </button>
         </div>
       </div>
 
       <NuoviPezzi membro={membro} pezzi={mio?.nuoviPezzi ?? []} />
     </>
+  );
+}
+
+function AggiungiBranoUfficiale({ onAdd }: { onAdd: (titolo: string) => boolean }) {
+  const [aperto, setAperto] = useState(false);
+  const [titolo, setTitolo] = useState("");
+  if (!aperto)
+    return (
+      <button className="btn primary block" onClick={() => setAperto(true)}>
+        + Aggiungi brano
+      </button>
+    );
+  return (
+    <form
+      className="card form-card"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (onAdd(titolo)) {
+          setTitolo("");
+          setAperto(false);
+        }
+      }}
+    >
+      <label className="field">
+        <span className="field-label">Nuovo brano</span>
+        <input className="input" value={titolo} onChange={(e) => setTitolo(e.target.value)} placeholder="Titolo" autoFocus />
+      </label>
+      <p className="muted small">Viene aggiunto come ultimo dei BIS, nella scaletta ufficiale e in tutte le proposte dei membri.</p>
+      <div className="row end">
+        <button type="button" className="btn ghost" onClick={() => setAperto(false)}>
+          Annulla
+        </button>
+        <button type="submit" className="btn primary" disabled={!titolo.trim()}>
+          Aggiungi a tutte
+        </button>
+      </div>
+    </form>
   );
 }
 
@@ -334,7 +406,7 @@ function NuoviPezzi({ membro, pezzi }: { membro: string; pezzi: NuovoPezzo[] }) 
           ))}
         </ul>
       )}
-      <p className="muted tiny">Compare automaticamente sotto PROSSIMO LIVE come “titolo proposta da {membro}”.</p>
+      <p className="muted tiny">Compare automaticamente sotto la SCALETTA UFFICIALE come “titolo proposta da {membro}”.</p>
     </section>
   );
 }

@@ -1,5 +1,5 @@
 {
-  "nota": "Scaletta iniziale (prossimo live). tipo 'sezione' con titolo vuoto = stacco tra blocchi; 'BIS' e 'ALTRE' sono intestazioni. I brani dopo 'ALTRE' non sono numerati.",
+  "nota": "Scaletta iniziale (scaletta ufficiale). tipo 'sezione' con titolo vuoto = stacco tra blocchi; 'BIS' e 'ALTRE' sono intestazioni. I brani dopo 'ALTRE' non sono numerati.",
   "righe": [
     { "tipo": "brano", "titolo": "SONDE" },
     { "tipo": "brano", "titolo": "VELENO" },

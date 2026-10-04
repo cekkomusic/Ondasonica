@@ -66,7 +66,7 @@ async function main() {
     const b = writeBatch(db);
     b.set(live, { righe, aggiornato: new Date().toISOString(), origine: "" }, { merge: true });
     await b.commit();
-    console.log(`✓ Scaletta prossimo live importata (${righe.length} righe).`);
+    console.log(`✓ Scaletta ufficiale importata (${righe.length} righe).`);
   }
 
   if (existing.exists() && !force) {
