@@ -19,9 +19,9 @@ const NAV = [
   { to: "/locali", label: "Locali", icon: <IconPin /> },
   { to: "/date", label: "Date", icon: <IconCalendar /> },
   { to: "/scaletta", label: "Scaletta", icon: <IconMusic /> },
-  { to: "/attivita", label: "Attività", icon: <IconCheck /> },
   { to: "/spese", label: "Spese", icon: <IconEuro /> },
   { to: "/scheda", label: "Scheda", icon: <IconSliders /> },
+  { to: "/attivita", label: "Attività", icon: <IconCheck /> },
 ];
 
 export default function App() {
