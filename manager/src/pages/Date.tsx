@@ -9,6 +9,9 @@ import { useSave } from "../components/Toast";
 import { cent, dataIt, euro, today } from "../lib/format";
 import { ErrorBox, Loading } from "../components/States";
 
+// Persone esterne alla band che possono procurare date (non partecipano alle spese).
+const ESTERNI = ["FABRIZIO"];
+
 const giorno = (iso: string) =>
   iso ? new Date(iso + "T12:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) : "";
 
@@ -19,7 +22,8 @@ const parseEuro = (s: string) => {
 
 export default function DatePrese() {
   const { data, loading, error } = useCollection<DataPresa>("date");
-  const { partecipanti } = usePartecipanti();
+  const { partecipanti: membri } = usePartecipanti();
+  const partecipanti = useMemo(() => [...membri, ...ESTERNI.filter((e) => !membri.includes(e))], [membri]);
   const [open, setOpen] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [vista, setVista] = useState<"card" | "tabella">("card");
