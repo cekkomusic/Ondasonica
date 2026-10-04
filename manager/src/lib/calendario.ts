@@ -1,4 +1,4 @@
-import { deleteField, doc, setDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, deleteField, doc, setDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 /** Impegno di un membro per un giorno. */
@@ -25,3 +25,33 @@ export function salvaImpegno(giorno: string, membro: string, imp: Impegno) {
 
 export const isoDay = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+/* ---------- Eventi della band (prove, passaggi nei locali) ---------- */
+
+export const BAND = "BAND";
+
+export const TIPI_EVENTO = {
+  prove: { icona: "🥁", label: "Prove" },
+  passaggio: { icona: "🤝", label: "Passaggio locale" },
+} as const;
+export type TipoEvento = keyof typeof TIPI_EVENTO;
+
+export interface EventoBand {
+  id: string;
+  tipo: TipoEvento;
+  nota: string;
+  creato: string;
+}
+
+/** Eventi band di un giorno (salvati in giorno.BAND.eventi). */
+export const eventiBand = (giorno: Record<string, unknown> | undefined): EventoBand[] =>
+  ((giorno?.[BAND] as { eventi?: EventoBand[] } | undefined)?.eventi ?? []).filter((e) => e && e.tipo in TIPI_EVENTO);
+
+export function aggiungiEventoBand(giorno: string, tipo: TipoEvento, nota: string) {
+  const ev: EventoBand = { id: Math.random().toString(36).slice(2, 10), tipo, nota: nota.trim(), creato: new Date().toISOString() };
+  return setDoc(doc(db(), "config", meseId(giorno)), { [giorno]: { [BAND]: { eventi: arrayUnion(ev) } } }, { merge: true });
+}
+
+export function rimuoviEventoBand(giorno: string, ev: EventoBand) {
+  return setDoc(doc(db(), "config", meseId(giorno)), { [giorno]: { [BAND]: { eventi: arrayRemove(ev) } } }, { merge: true });
+}
