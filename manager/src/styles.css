@@ -522,3 +522,27 @@ input[type="date"].input { color-scheme: dark; }
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-weight: 600; font-size: 0.86rem; color: var(--muted); }
 .tipo-btn .tipo-icona { font-size: 1.5rem; }
 .tipo-btn.on { color: var(--text); border-color: var(--ec); background: color-mix(in srgb, var(--ec) 16%, transparent); box-shadow: 0 0 16px -6px var(--ec); }
+
+/* ---------- IBAN ---------- */
+.iban-box { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 12px; border-radius: 12px; border: 1px solid rgba(34, 228, 255, 0.3); background: rgba(34, 228, 255, 0.06); min-width: 0; }
+.iban-ico { font-size: 1.1rem; }
+.iban-text { display: flex; flex-direction: column; min-width: 0; }
+.iban-nome { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+.iban-val { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.86rem; letter-spacing: 0.02em; overflow-wrap: anywhere; }
+.copy-btn { width: 44px; height: 44px; flex: none; border-radius: 12px; border: 1px solid rgba(34, 228, 255, 0.45); background: rgba(34, 228, 255, 0.1); color: var(--cyan); display: grid; place-items: center; }
+.copy-btn:active { transform: scale(0.94); box-shadow: 0 0 16px -4px var(--cyan); }
+.spesa-iban { padding: 0 16px 14px 18px; margin-top: -4px; }
+.rubrica-pick { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.rubrica-pick .chip { min-height: 34px; }
+.salva-rubrica { display: flex; flex-direction: column; gap: 8px; }
+.check { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; min-height: 40px; }
+.check input { width: 22px; height: 22px; accent-color: var(--cyan); }
+.rubrica-row { display: flex; gap: 8px; align-items: center; }
+.rubrica-row .iban-box { flex: 1; }
+.rubrica-add { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+
+/* ---------- Notifiche ---------- */
+.notif-card { display: flex; flex-direction: column; gap: 10px; }
+.notif-card.on { border-color: rgba(61, 220, 132, 0.4); }
+.notif-ico { font-size: 1.5rem; }
+.notif-card p { margin: 2px 0 0; }

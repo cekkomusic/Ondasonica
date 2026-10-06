@@ -7,6 +7,8 @@ import { SyncedField } from "../components/SyncedField";
 import { useSave } from "../components/Toast";
 import { cent, dataIt, euro, today } from "../lib/format";
 import { ErrorBox, Loading } from "../components/States";
+import { IbanBox } from "../components/IbanBox";
+import { aggiungiVoce, rimuoviVoce, useRubrica, type VoceRubrica } from "../lib/iban";
 
 export const PARTECIPANTI_DEFAULT = ["SBERLA", "CEKKO", "ADRY", "VALTER", "PHIL"];
 
@@ -91,6 +93,8 @@ export default function Spese() {
           />
         ))}
       </div>
+
+      <RubricaIban />
     </div>
   );
 }
@@ -124,8 +128,20 @@ function SpesaCard({ s, partecipanti, open, onToggle }: { s: Spesa; partecipanti
         </div>
       </button>
 
+      {s.iban && (
+        <div className="spesa-iban">
+          <IbanBox iban={s.iban} nome={`Versa a ${s.ibanNome || s.inseritoDa || "—"}`} />
+        </div>
+      )}
+
       {open && (
         <div className="spesa-detail">
+          <SyncedField
+            label="IBAN (facoltativo)"
+            placeholder="Es. IT60 X054 2811 1010 0000 0123 456"
+            value={s.iban ?? ""}
+            onSave={(v) => save(updateDoc(ref, { iban: v.trim(), ibanNome: "" }))}
+          />
           {partecipanti.map((p) => {
             const pg = s.pagamenti?.[p] ?? { pagato: false, nota: "" };
             return (
@@ -179,6 +195,12 @@ function NuovaSpesa({ partecipanti, onDone }: { partecipanti: string[]; onDone: 
     }
   });
 
+  const [iban, setIban] = useState("");
+  const [ibanNome, setIbanNome] = useState("");
+  const [inRubrica, setInRubrica] = useState(false);
+  const [nomeRubrica, setNomeRubrica] = useState("");
+  const { voci } = useRubrica();
+  const ibanGiaInRubrica = voci.some((v) => v.iban.replace(/\s/g, "") === iban.replace(/\s/g, ""));
   const tot = Number(importo.replace(",", "."));
   const valido = descrizione.trim() && Number.isFinite(tot) && tot > 0 && inseritoDa;
 
@@ -199,11 +221,14 @@ function NuovaSpesa({ partecipanti, onDone }: { partecipanti: string[]; onDone: 
             importoTotale: cent(tot),
             data,
             inseritoDa,
+            iban: iban.trim(),
+            ibanNome: iban.trim() ? (inRubrica && !ibanGiaInRubrica ? nomeRubrica.trim() : ibanNome) : "",
             pagamenti: Object.fromEntries(partecipanti.map((p) => [p, { pagato: false, nota: "" }])),
             createdAt: Date.now(),
           }),
           "Spesa aggiunta",
         );
+        if (iban.trim() && inRubrica && !ibanGiaInRubrica) save(aggiungiVoce(nomeRubrica.trim() || inseritoDa, iban), "IBAN salvato in rubrica");
         onDone();
       }}
     >
@@ -244,6 +269,53 @@ function NuovaSpesa({ partecipanti, onDone }: { partecipanti: string[]; onDone: 
           </button>
         ))}
       </div>
+      <label className="field">
+        <span className="field-label">IBAN (facoltativo)</span>
+        <input
+          className="input"
+          value={iban}
+          onChange={(e) => {
+            setIban(e.target.value);
+            setIbanNome("");
+          }}
+          placeholder="Dove versare la quota, es. IT60 X054 2811 …"
+          autoCapitalize="characters"
+        />
+      </label>
+      {voci.length > 0 && (
+        <div className="rubrica-pick" data-noswipe>
+          <span className="muted small">📒 Dalla rubrica:</span>
+          {voci.map((v) => (
+            <button
+              type="button"
+              key={v.id}
+              className={`chip ${iban === v.iban ? "on" : ""}`}
+              onClick={() => {
+                setIban(v.iban);
+                setIbanNome(v.nome);
+              }}
+            >
+              {v.nome}
+            </button>
+          ))}
+        </div>
+      )}
+      {iban.trim() && !ibanGiaInRubrica && (
+        <div className="salva-rubrica">
+          <label className="check">
+            <input type="checkbox" checked={inRubrica} onChange={(e) => setInRubrica(e.target.checked)} />
+            Salva questo IBAN nella rubrica
+          </label>
+          {inRubrica && (
+            <input
+              className="input"
+              value={nomeRubrica}
+              onChange={(e) => setNomeRubrica(e.target.value)}
+              placeholder={`Nome in rubrica (es. ${inseritoDa || "CEKKO"}, Sala prove…)`}
+            />
+          )}
+        </div>
+      )}
       {Number.isFinite(tot) && tot > 0 && (
         <p className="quota-preview">
           Quota a testa: <strong>{euro(cent(tot / partecipanti.length))}</strong>
@@ -258,5 +330,56 @@ function NuovaSpesa({ partecipanti, onDone }: { partecipanti: string[]; onDone: 
         </button>
       </div>
     </form>
+  );
+}
+
+function RubricaIban() {
+  const save = useSave();
+  const { voci } = useRubrica();
+  const [nome, setNome] = useState("");
+  const [iban, setIban] = useState("");
+
+  return (
+    <details className="card section rubrica">
+      <summary>
+        <span className="sec-icon">📒</span>
+        <span className="grow">Rubrica IBAN</span>
+        <span className={`fill-count ${voci.length ? "some" : ""}`}>{voci.length}</span>
+      </summary>
+      <div className="section-body">
+        {voci.length === 0 && <p className="muted small">Nessun IBAN salvato.</p>}
+        {voci.map((v: VoceRubrica) => (
+          <div key={v.id} className="rubrica-row">
+            <IbanBox iban={v.iban} nome={v.nome} />
+            <button
+              className="icon-btn"
+              aria-label={`Elimina ${v.nome}`}
+              onClick={() => {
+                if (confirm(`Eliminare l'IBAN di "${v.nome}" dalla rubrica?`)) save(rimuoviVoce(v), "Eliminato dalla rubrica");
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+        <form
+          className="rubrica-add"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!nome.trim() || !iban.trim()) return;
+            save(aggiungiVoce(nome, iban), "IBAN salvato in rubrica");
+            setNome("");
+            setIban("");
+          }}
+        >
+          <span className="field-label">Aggiungi alla rubrica</span>
+          <input className="input" value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome (es. CEKKO, Sala prove)" />
+          <input className="input" value={iban} onChange={(e) => setIban(e.target.value)} placeholder="IBAN" autoCapitalize="characters" />
+          <button className="btn primary" type="submit" disabled={!nome.trim() || !iban.trim()}>
+            Salva in rubrica
+          </button>
+        </form>
+      </div>
+    </details>
   );
 }

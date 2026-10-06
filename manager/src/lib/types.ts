@@ -54,6 +54,8 @@ export interface Spesa {
   importoTotale: number;
   data: string; // YYYY-MM-DD
   inseritoDa: string;
+  iban?: string; // facoltativo: dove versare la quota
+  ibanNome?: string; // a chi appartiene l'IBAN (se diverso da chi ha inserito la spesa)
   pagamenti: Record<string, Pagamento>;
   createdAt?: number;
 }

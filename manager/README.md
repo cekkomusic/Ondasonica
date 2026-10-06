@@ -5,7 +5,7 @@ lead di locali/festival, attività, spese condivise e scheda tecnica.
 
 > ⚠️ **ATTENZIONE — NESSUN LOGIN.** Chiunque abbia il link dell'app può vedere **e modificare** tutti i dati
 > (lead, note, spese, date, scaletta, scheda tecnica). Condividi il link **solo con le persone fidate** della band.
-> Non inserire dati sensibili (IBAN, password, documenti).
+> Non inserire password o documenti. Gli IBAN (sezione Spese) sono visibili a chiunque abbia il link: usateli solo tra di voi.
 
 ## Sezioni
 
@@ -17,7 +17,7 @@ lead di locali/festival, attività, spese condivise e scheda tecnica.
 | **Calendario** | Calendario mensile condiviso per i 5 membri più la crew (SILVANO e MATTEO, video e audio live): ognuno sceglie "Chi sei?", tocca un giorno, scrive cosa farà e può segnarsi **indisponibile** (in rosso), poi **Salva**. Nella griglia: pallino rosso = qualcuno indisponibile, pallino azzurro = impegno segnato, 🎸 = concerto. Quando si inserisce un nuovo concerto in un giorno in cui qualcuno è indisponibile, compare un avviso. Scegliendo **🎸 BAND** si segnano gli eventi del gruppo: **🥁 Prove** e **🤝 Passaggio locale** (con nota, es. orario e luogo), elencati sotto la griglia insieme ai concerti del mese. |
 | **Scaletta** | Sotto-tab **Scaletta ufficiale** + una **Proposta** per ogni membro. Nella scaletta ufficiale l'ordine è di sola lettura (si cambiano solo i colori delle righe, toccando il numero); il tasto **+ Aggiungi brano** aggiunge un brano a tutte le scalette (ufficiale e proposte dei membri), come ultimo dei BIS. Nelle proposte personali: trascina ⠿ per spostare le righe, colori, aggiungi/togli brani e stacchi, poi **Salva** o **Rendi scaletta ufficiale** (copia la proposta nella scaletta ufficiale). Sotto ogni tab c'è il riquadro **Proposte nuovi pezzi**: nelle tab personali si scrive e si salva, sotto la scaletta ufficiale compare in automatico come "titolo proposta da NOME" (sola lettura). |
 | **Attività** (dalla Home) | Log/checklist ordinato per data. Aggiungi attività, cambia stato, modifica descrizione/note, elimina. |
-| **Spese** | Nuova spesa (descrizione, importo, data, chi l'ha inserita) → quota a testa calcolata su 5. Per ogni partecipante toggle pagato/non pagato + nota. Riepilogo "quanto deve ancora versare ciascuno". |
+| **Spese** | Nuova spesa (descrizione, importo, data, chi l'ha inserita) → quota a testa calcolata su 5. Per ogni partecipante toggle pagato/non pagato + nota. Riepilogo "quanto deve ancora versare ciascuno". Campo **IBAN** facoltativo con tasto copia e **📒 Rubrica IBAN** (nome + IBAN, in `config/rubricaIban`) da cui pescare quando si inserisce una spesa. |
 | **Scheda tecnica** | Form a sezioni che rispecchia `data/scheda_tecnica.json`, salvataggio automatico campo per campo. |
 
 Tutto si salva da solo (i campi di testo ~1 secondo dopo che smetti di scrivere, o quando esci dal campo) e
@@ -149,6 +149,34 @@ nuovo deploy (Deployments → ⋯ → Redeploy).
 **Add new site → Import an existing project** → repository → *Base directory* `manager`
 (build `npm run build`, publish `dist` sono già in `netlify.toml`) → aggiungi le 6 variabili in
 *Site configuration → Environment variables* → Deploy.
+
+## Notifiche push: promemoria alle 9:00
+
+Ogni mattina chi ha attivato le notifiche riceve un promemoria con ciò che è segnato nel **Calendario** per quel
+giorno (concerti, prove, passaggi nei locali, chi è indisponibile, impegni). In cima c'è l'impegno personale di
+chi ha scelto il proprio nome in "Chi sei?". Nei giorni senza eventi non arriva niente.
+
+**Come funziona:** due cron di Vercel (in `vercel.json`) chiamano `/api/promemoria` alle 07:00 e alle 08:00 UTC;
+la funzione invia solo quando in Italia sono le 9 (vale sia per l'ora legale sia per la solare) e una sola volta
+al giorno. Sul piano gratuito Vercel i cron partono in un momento qualsiasi entro l'ora: il promemoria arriva
+quindi **tra le 9:00 e le 9:59**. L'invio usa Firebase Cloud Messaging (gratuito). Funziona su Vercel, non su Netlify.
+
+**Configurazione (una volta):**
+1. Firebase → ⚙️ **Impostazioni progetto → Cloud Messaging** → sezione **Certificati push web** → **Genera coppia
+   di chiavi**. Copia la chiave → su Vercel variabile `VITE_FIREBASE_VAPID_KEY`.
+   (Nella stessa pagina "API Firebase Cloud Messaging (V1)" deve risultare **Attivata**.)
+2. Firebase → ⚙️ **Impostazioni progetto → Account di servizio** → **Genera nuova chiave privata** → si scarica un
+   file `.json`. Aprilo con Blocco note, copia **tutto** il contenuto → su Vercel variabile `FIREBASE_SERVICE_ACCOUNT`.
+   ⚠️ Questo file è una chiave segreta: non condividerlo e non caricarlo su GitHub.
+3. Su Vercel aggiungi anche `CRON_SECRET` = una password lunga a piacere.
+4. Rifai il deploy (Deployments → ⋯ → Redeploy).
+
+**Su ogni telefono:** Calendario → riquadro 🔔 → **Attiva notifiche** → Consenti. Con **Invia prova** arriva subito
+una notifica di test. Su **iPhone** (iOS 16.4 o successivo) bisogna prima aggiungere l'app alla schermata Home e
+aprirla da lì. I telefoni registrati sono in `config/notifiche`.
+
+**Prova manuale dell'invio** (da computer): `curl -H "Authorization: Bearer CRON_SECRET" "https://<sito>/api/promemoria?dry=1"`
+mostra i messaggi senza inviarli; `?force=1` invia subito.
 
 ## Sviluppo con emulatore (opzionale)
 
