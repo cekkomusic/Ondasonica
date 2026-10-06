@@ -16,7 +16,7 @@ self.addEventListener("push", (event) => {
     self.registration.showNotification(title, {
       body: d.body || "",
       icon: "/logo.png",
-      badge: "/icon.svg",
+      badge: "/icon-192.png",
       tag: "ondasonica-promemoria",
       renotify: true,
       data: { url: d.url || "/calendario" },
