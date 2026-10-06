@@ -18,6 +18,7 @@ export const SEZIONI: { key: Sezione; titolo: string; icona: string; campi: Reco
     titolo: "Backline",
     icona: "🥁",
     campi: {
+      voce: { label: "Voce", hint: "Microfoni, aste, effetti voce, in-ear…", multi: true },
       batteria: { label: "Batteria", multi: true },
       basso: { label: "Basso", multi: true },
       chitarre: { label: "Chitarre", multi: true },
