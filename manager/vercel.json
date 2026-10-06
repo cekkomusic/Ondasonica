@@ -1,7 +1,33 @@
 {
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }],
+  "rewrites": [
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ],
   "crons": [
-    { "path": "/api/promemoria?slot=1", "schedule": "0 7 * * *" },
-    { "path": "/api/promemoria?slot=2", "schedule": "0 8 * * *" }
+    {
+      "path": "/api/promemoria?slot=1",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/promemoria?slot=2",
+      "schedule": "0 8 * * *"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/.well-known/assetlinks.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
   ]
 }

@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.vercel.ondasonica_manager.twa",
+      "sha256_cert_fingerprints": ["15:84:98:D5:46:34:BF:4F:D8:1F:81:E5:90:CA:60:72:7F:F0:48:82:F3:23:CE:29:69:97:BF:D4:19:07:12:DA"]
+    }
+  }
+]
