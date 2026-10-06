@@ -5,7 +5,7 @@ lead di locali/festival, attività, spese condivise e scheda tecnica.
 
 > ⚠️ **ATTENZIONE — NESSUN LOGIN.** Chiunque abbia il link dell'app può vedere **e modificare** tutti i dati
 > (lead, note, spese, date, scaletta, scheda tecnica). Condividi il link **solo con le persone fidate** della band.
-> Non inserire dati sensibili (IBAN, password, documenti).
+> Non inserire password o documenti. Gli IBAN (sezione Spese) sono visibili a chiunque abbia il link: usateli solo tra di voi.
 
 ## Sezioni
 
@@ -17,7 +17,7 @@ lead di locali/festival, attività, spese condivise e scheda tecnica.
 | **Calendario** | Calendario mensile condiviso per i 5 membri più la crew (SILVANO e MATTEO, video e audio live): ognuno sceglie "Chi sei?", tocca un giorno, scrive cosa farà e può segnarsi **indisponibile** (in rosso), poi **Salva**. Nella griglia: pallino rosso = qualcuno indisponibile, pallino azzurro = impegno segnato, 🎸 = concerto. Quando si inserisce un nuovo concerto in un giorno in cui qualcuno è indisponibile, compare un avviso. Scegliendo **🎸 BAND** si segnano gli eventi del gruppo: **🥁 Prove** e **🤝 Passaggio locale** (con nota, es. orario e luogo), elencati sotto la griglia insieme ai concerti del mese. |
 | **Scaletta** | Sotto-tab **Scaletta ufficiale** + una **Proposta** per ogni membro. Nella scaletta ufficiale l'ordine è di sola lettura (si cambiano solo i colori delle righe, toccando il numero); il tasto **+ Aggiungi brano** aggiunge un brano a tutte le scalette (ufficiale e proposte dei membri), come ultimo dei BIS. Nelle proposte personali: trascina ⠿ per spostare le righe, colori, aggiungi/togli brani e stacchi, poi **Salva** o **Rendi scaletta ufficiale** (copia la proposta nella scaletta ufficiale). Sotto ogni tab c'è il riquadro **Proposte nuovi pezzi**: nelle tab personali si scrive e si salva, sotto la scaletta ufficiale compare in automatico come "titolo proposta da NOME" (sola lettura). |
 | **Attività** (dalla Home) | Log/checklist ordinato per data. Aggiungi attività, cambia stato, modifica descrizione/note, elimina. |
-| **Spese** | Nuova spesa (descrizione, importo, data, chi l'ha inserita) → quota a testa calcolata su 5. Per ogni partecipante toggle pagato/non pagato + nota. Riepilogo "quanto deve ancora versare ciascuno". |
+| **Spese** | Nuova spesa (descrizione, importo, data, chi l'ha inserita) → quota a testa calcolata su 5. Per ogni partecipante toggle pagato/non pagato + nota. Riepilogo "quanto deve ancora versare ciascuno". Campo **IBAN** facoltativo con tasto copia e **📒 Rubrica IBAN** (nome + IBAN, in `config/rubricaIban`) da cui pescare quando si inserisce una spesa. |
 | **Scheda tecnica** | Form a sezioni che rispecchia `data/scheda_tecnica.json`, salvataggio automatico campo per campo. |
 
 Tutto si salva da solo (i campi di testo ~1 secondo dopo che smetti di scrivere, o quando esci dal campo) e
