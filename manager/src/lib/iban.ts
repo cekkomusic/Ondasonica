@@ -49,3 +49,10 @@ export function copiaTesto(testo: string): Promise<void> {
     else reject(new Error("copia non riuscita"));
   });
 }
+
+/** Nome in rubrica per un IBAN (confronto senza spazi e maiuscole/minuscole), se c'è. */
+export function nomeDaRubrica(voci: VoceRubrica[], iban: string | undefined) {
+  const k = (iban ?? "").replace(/\s+/g, "").toUpperCase();
+  if (!k) return "";
+  return voci.find((v) => v.iban.replace(/\s+/g, "").toUpperCase() === k)?.nome ?? "";
+}

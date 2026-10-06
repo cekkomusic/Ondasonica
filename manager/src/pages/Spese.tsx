@@ -8,7 +8,7 @@ import { useSave } from "../components/Toast";
 import { cent, dataIt, euro, today } from "../lib/format";
 import { ErrorBox, Loading } from "../components/States";
 import { IbanBox } from "../components/IbanBox";
-import { aggiungiVoce, rimuoviVoce, useRubrica, type VoceRubrica } from "../lib/iban";
+import { aggiungiVoce, nomeDaRubrica, rimuoviVoce, useRubrica, type VoceRubrica } from "../lib/iban";
 
 export const PARTECIPANTI_DEFAULT = ["SBERLA", "CEKKO", "ADRY", "VALTER", "PHIL"];
 
@@ -34,6 +34,7 @@ export function residui(spese: Spesa[], partecipanti: string[]) {
 export default function Spese() {
   const { data: spese, loading, error } = useCollection<Spesa>("spese");
   const { partecipanti } = usePartecipanti();
+  const { voci } = useRubrica();
   const [open, setOpen] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
 
@@ -88,6 +89,7 @@ export default function Spese() {
             key={s.id}
             s={s}
             partecipanti={partecipanti}
+            voci={voci}
             open={open === s.id}
             onToggle={() => setOpen(open === s.id ? null : s.id)}
           />
@@ -99,12 +101,26 @@ export default function Spese() {
   );
 }
 
-function SpesaCard({ s, partecipanti, open, onToggle }: { s: Spesa; partecipanti: string[]; open: boolean; onToggle: () => void }) {
+function SpesaCard({
+  s,
+  partecipanti,
+  voci,
+  open,
+  onToggle,
+}: {
+  s: Spesa;
+  partecipanti: string[];
+  voci: VoceRubrica[];
+  open: boolean;
+  onToggle: () => void;
+}) {
   const save = useSave();
   const ref = doc(db(), "spese", s.id);
   const q = quota(s, partecipanti.length);
   const pagati = partecipanti.filter((p) => s.pagamenti?.[p]?.pagato).length;
   const saldata = pagati === partecipanti.length;
+  // A chi versare: la voce di rubrica con lo stesso IBAN, altrimenti il nome salvato, altrimenti chi ha inserito la spesa.
+  const intestatario = nomeDaRubrica(voci, s.iban) || s.ibanNome || s.inseritoDa || "—";
 
   return (
     <article className={`card spesa-card ${saldata ? "saldata" : ""} ${open ? "open" : ""}`}>
@@ -130,7 +146,7 @@ function SpesaCard({ s, partecipanti, open, onToggle }: { s: Spesa; partecipanti
 
       {s.iban && (
         <div className="spesa-iban">
-          <IbanBox iban={s.iban} nome={`Versa a ${s.ibanNome || s.inseritoDa || "—"}`} />
+          <IbanBox iban={s.iban} nome={`Versa a ${intestatario}`} />
         </div>
       )}
 
@@ -140,7 +156,7 @@ function SpesaCard({ s, partecipanti, open, onToggle }: { s: Spesa; partecipanti
             label="IBAN (facoltativo)"
             placeholder="Es. IT60 X054 2811 1010 0000 0123 456"
             value={s.iban ?? ""}
-            onSave={(v) => save(updateDoc(ref, { iban: v.trim(), ibanNome: "" }))}
+            onSave={(v) => save(updateDoc(ref, { iban: v.trim(), ibanNome: nomeDaRubrica(voci, v) }))}
           />
           {partecipanti.map((p) => {
             const pg = s.pagamenti?.[p] ?? { pagato: false, nota: "" };
@@ -200,7 +216,8 @@ function NuovaSpesa({ partecipanti, onDone }: { partecipanti: string[]; onDone: 
   const [inRubrica, setInRubrica] = useState(false);
   const [nomeRubrica, setNomeRubrica] = useState("");
   const { voci } = useRubrica();
-  const ibanGiaInRubrica = voci.some((v) => v.iban.replace(/\s/g, "") === iban.replace(/\s/g, ""));
+  const nomeInRubrica = nomeDaRubrica(voci, iban);
+  const ibanGiaInRubrica = Boolean(nomeInRubrica);
   const tot = Number(importo.replace(",", "."));
   const valido = descrizione.trim() && Number.isFinite(tot) && tot > 0 && inseritoDa;
 
@@ -222,7 +239,7 @@ function NuovaSpesa({ partecipanti, onDone }: { partecipanti: string[]; onDone: 
             data,
             inseritoDa,
             iban: iban.trim(),
-            ibanNome: iban.trim() ? (inRubrica && !ibanGiaInRubrica ? nomeRubrica.trim() : ibanNome) : "",
+            ibanNome: iban.trim() ? nomeInRubrica || (inRubrica ? nomeRubrica.trim() : ibanNome) : "",
             pagamenti: Object.fromEntries(partecipanti.map((p) => [p, { pagato: false, nota: "" }])),
             createdAt: Date.now(),
           }),
@@ -289,7 +306,7 @@ function NuovaSpesa({ partecipanti, onDone }: { partecipanti: string[]; onDone: 
             <button
               type="button"
               key={v.id}
-              className={`chip ${iban === v.iban ? "on" : ""}`}
+              className={`chip ${nomeInRubrica === v.nome ? "on" : ""}`}
               onClick={() => {
                 setIban(v.iban);
                 setIbanNome(v.nome);
