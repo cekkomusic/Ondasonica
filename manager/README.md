@@ -150,6 +150,34 @@ nuovo deploy (Deployments → ⋯ → Redeploy).
 (build `npm run build`, publish `dist` sono già in `netlify.toml`) → aggiungi le 6 variabili in
 *Site configuration → Environment variables* → Deploy.
 
+## Notifiche push: promemoria alle 9:00
+
+Ogni mattina chi ha attivato le notifiche riceve un promemoria con ciò che è segnato nel **Calendario** per quel
+giorno (concerti, prove, passaggi nei locali, chi è indisponibile, impegni). In cima c'è l'impegno personale di
+chi ha scelto il proprio nome in "Chi sei?". Nei giorni senza eventi non arriva niente.
+
+**Come funziona:** due cron di Vercel (in `vercel.json`) chiamano `/api/promemoria` alle 07:00 e alle 08:00 UTC;
+la funzione invia solo quando in Italia sono le 9 (vale sia per l'ora legale sia per la solare) e una sola volta
+al giorno. Sul piano gratuito Vercel i cron partono in un momento qualsiasi entro l'ora: il promemoria arriva
+quindi **tra le 9:00 e le 9:59**. L'invio usa Firebase Cloud Messaging (gratuito). Funziona su Vercel, non su Netlify.
+
+**Configurazione (una volta):**
+1. Firebase → ⚙️ **Impostazioni progetto → Cloud Messaging** → sezione **Certificati push web** → **Genera coppia
+   di chiavi**. Copia la chiave → su Vercel variabile `VITE_FIREBASE_VAPID_KEY`.
+   (Nella stessa pagina "API Firebase Cloud Messaging (V1)" deve risultare **Attivata**.)
+2. Firebase → ⚙️ **Impostazioni progetto → Account di servizio** → **Genera nuova chiave privata** → si scarica un
+   file `.json`. Aprilo con Blocco note, copia **tutto** il contenuto → su Vercel variabile `FIREBASE_SERVICE_ACCOUNT`.
+   ⚠️ Questo file è una chiave segreta: non condividerlo e non caricarlo su GitHub.
+3. Su Vercel aggiungi anche `CRON_SECRET` = una password lunga a piacere.
+4. Rifai il deploy (Deployments → ⋯ → Redeploy).
+
+**Su ogni telefono:** Calendario → riquadro 🔔 → **Attiva notifiche** → Consenti. Con **Invia prova** arriva subito
+una notifica di test. Su **iPhone** (iOS 16.4 o successivo) bisogna prima aggiungere l'app alla schermata Home e
+aprirla da lì. I telefoni registrati sono in `config/notifiche`.
+
+**Prova manuale dell'invio** (da computer): `curl -H "Authorization: Bearer CRON_SECRET" "https://<sito>/api/promemoria?dry=1"`
+mostra i messaggi senza inviarli; `?force=1` invia subito.
+
 ## Sviluppo con emulatore (opzionale)
 
 Per provare senza toccare i dati veri: installa `firebase-tools`, avvia

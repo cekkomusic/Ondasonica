@@ -19,6 +19,8 @@ import {
   type TipoEvento,
 } from "../lib/calendario";
 import { today } from "../lib/format";
+import { NotificheCard } from "../components/Notifiche";
+import { rinnovaSeAttive } from "../lib/notifiche";
 
 const GIORNI = ["L", "M", "M", "G", "V", "S", "D"];
 
@@ -41,6 +43,11 @@ export default function Calendario() {
   const [io, setIo] = useState<string>(() => leggi("ondasonica.me", ""));
   const cal = useDocument<MeseCalendario>("config", meseId(mese + "-01"));
   const concerti = useCollection<DataPresa>("date");
+
+  // Tiene aggiornato il token delle notifiche e il nome associato a questo telefono.
+  useEffect(() => {
+    if (io && io !== BAND) rinnovaSeAttive(io);
+  }, [io]);
 
   useEffect(() => {
     try {
@@ -108,6 +115,8 @@ export default function Calendario() {
           ))}
         </div>
       </section>
+
+      <NotificheCard membro={io === BAND ? "" : io} />
 
       <section className="card cal-card" data-noswipe>
         <div className="cal-head">

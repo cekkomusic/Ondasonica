@@ -540,3 +540,9 @@ input[type="date"].input { color-scheme: dark; }
 .rubrica-row { display: flex; gap: 8px; align-items: center; }
 .rubrica-row .iban-box { flex: 1; }
 .rubrica-add { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+
+/* ---------- Notifiche ---------- */
+.notif-card { display: flex; flex-direction: column; gap: 10px; }
+.notif-card.on { border-color: rgba(61, 220, 132, 0.4); }
+.notif-ico { font-size: 1.5rem; }
+.notif-card p { margin: 2px 0 0; }

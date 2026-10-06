@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, type FirebaseApp } from "firebase/app";
 import {
   connectFirestoreEmulator,
   initializeFirestore,
@@ -18,14 +18,20 @@ const config = {
 
 export const firebaseConfigured = Boolean(config.apiKey && config.projectId && config.appId);
 
+let _app: FirebaseApp | null = null;
 let _db: Firestore | null = null;
+
+export function app(): FirebaseApp {
+  if (!_app) _app = initializeApp(config);
+  return _app;
+}
 
 export function db(): Firestore {
   if (!_db) {
-    const app = initializeApp(config);
+    const app_ = app();
     // Cache locale: l'app si apre subito anche con rete scarsa e le modifiche
     // fatte offline vengono sincronizzate appena torna la connessione.
-    _db = initializeFirestore(app, {
+    _db = initializeFirestore(app_, {
       localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
     });
     // Solo per sviluppo/test locale con l'emulatore Firestore (es. "localhost:8080").
