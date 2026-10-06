@@ -546,3 +546,29 @@ input[type="date"].input { color-scheme: dark; }
 .notif-card.on { border-color: rgba(61, 220, 132, 0.4); }
 .notif-ico { font-size: 1.5rem; }
 .notif-card p { margin: 2px 0 0; }
+
+/* ---------- Esporta scheda tecnica ---------- */
+.esporta-card { display: flex; flex-direction: column; gap: 10px; }
+.esporta-card h3 { margin: 0; }
+.esporta-card p { margin: 0; }
+.esporta-ok { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); }
+.esporta-ok a.btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; color: var(--text); }
+.stageplot-preview { width: 100%; max-height: 360px; object-fit: contain; border-radius: 12px; border: 1px solid var(--line-2); background: #fff; }
+
+/* Foglio stampabile (fuori schermo) */
+.foglio-wrap { position: fixed; left: -10000px; top: 0; pointer-events: none; }
+.foglio { width: 794px; background: #fff; color: #15151d; font-family: Inter, Arial, sans-serif; font-size: 13px; line-height: 1.45; padding: 40px 48px; box-sizing: border-box; }
+.foglio h1 { font-family: "Space Grotesk", Arial, sans-serif; font-size: 30px; margin: 0; color: #15151d; background: none; -webkit-text-fill-color: initial; filter: none; }
+.foglio h2 { font-family: "Space Grotesk", Arial, sans-serif; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; color: #5b2fd6; margin: 0 0 8px; padding-bottom: 4px; border-bottom: 2px solid #e6e1f7; }
+.foglio section { padding: 14px 0 6px; }
+.foglio-head { display: flex; gap: 20px; align-items: center; padding-bottom: 16px; border-bottom: 3px solid #15151d; }
+.foglio-logo { width: 120px; height: auto; }
+.foglio-kicker { margin: 0; text-transform: uppercase; letter-spacing: 0.18em; font-size: 11px; color: #d4318f; font-weight: 700; }
+.foglio-sub { margin: 2px 0 0; color: #555; }
+.foglio-tab { width: 100%; border-collapse: collapse; }
+.foglio-tab td { padding: 5px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+.foglio-tab td.k { width: 34%; font-weight: 600; color: #333; }
+.foglio .pre { white-space: pre-wrap; margin: 0; }
+.foglio-plot { display: block; max-width: 100%; max-height: 900px; margin: 10px auto 0; border: 1px solid #ddd; }
+.foglio-nota { color: #666; font-size: 12px; word-break: break-all; }
+.foglio-foot { margin-top: 18px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 11px; color: #888; text-align: center; }
