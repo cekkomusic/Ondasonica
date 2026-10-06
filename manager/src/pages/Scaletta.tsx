@@ -9,6 +9,8 @@ import { tick } from "../lib/haptics";
 import { dataIt } from "../lib/format";
 import { ErrorBox, Loading } from "../components/States";
 import scalettaSeed from "../../data/scaletta.json";
+import { chiaveBrano, useBrani, type InfoBrano } from "../lib/brani";
+import { BranoOverlay } from "../components/BranoOverlay";
 
 const LIVE = "live";
 
@@ -425,6 +427,8 @@ function ListaScaletta({
   onColore: (id: string, colore: string) => void;
 }) {
   const numeri = numerazione(righe);
+  const brani = useBrani();
+  const [aperto, setAperto] = useState<{ titolo: string; modo: "testo" | "youtube" } | null>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [paletteId, setPaletteId] = useState<string | null>(null);
@@ -511,6 +515,7 @@ function ListaScaletta({
                   {numeri[r.id] ?? "•"}
                 </button>
                 <span className="titolo">{r.titolo}</span>
+                <TastiBrano info={brani[chiaveBrano(r.titolo)]} onApri={(modo) => setAperto({ titolo: r.titolo, modo })} />
               </>
             ) : editable ? (
               <input
@@ -563,6 +568,39 @@ function ListaScaletta({
           </li>
         );
       })}
+      {aperto && (
+        <BranoOverlay
+          titolo={aperto.titolo}
+          modo={aperto.modo}
+          info={brani[chiaveBrano(aperto.titolo)]}
+          onClose={() => setAperto(null)}
+        />
+      )}
     </ol>
+  );
+}
+
+/** Tasti TESTO e YOUTUBE accanto al titolo. YouTube apre il video se c'è il link, altrimenti chiede di inserirlo. */
+function TastiBrano({ info, onApri }: { info?: InfoBrano; onApri: (modo: "testo" | "youtube") => void }) {
+  return (
+    <span className="tasti-brano">
+      <button
+        type="button"
+        className={`tb tb-testo ${info?.testo ? "on" : ""}`}
+        aria-label={info?.testo ? "Apri il testo" : "Aggiungi il testo"}
+        onClick={() => onApri("testo")}
+      >
+        TESTO
+      </button>
+      {info?.youtube ? (
+        <a className="tb tb-yt on" href={info.youtube} target="_blank" rel="noreferrer" aria-label="Ascolta su YouTube">
+          YOUTUBE
+        </a>
+      ) : (
+        <button type="button" className="tb tb-yt" aria-label="Aggiungi link YouTube" onClick={() => onApri("youtube")}>
+          YOUTUBE
+        </button>
+      )}
+    </span>
   );
 }

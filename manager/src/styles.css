@@ -572,3 +572,31 @@ input[type="date"].input { color-scheme: dark; }
 .foglio-plot { display: block; max-width: 100%; max-height: 900px; margin: 10px auto 0; border: 1px solid #ddd; }
 .foglio-nota { color: #666; font-size: 12px; word-break: break-all; }
 .foglio-foot { margin-top: 18px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 11px; color: #888; text-align: center; }
+
+/* ---------- Testo / YouTube dei brani ---------- */
+.tasti-brano { display: inline-flex; gap: 4px; flex: none; }
+.tb {
+  min-width: 44px; height: 34px; padding: 0 6px; border-radius: 9px; border: 1px dashed var(--line-2); background: transparent;
+  color: var(--muted); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.03em; display: inline-flex; align-items: center; justify-content: center;
+  text-decoration: none; font-family: Inter, sans-serif;
+}
+.tb.on { border-style: solid; }
+.tb-testo.on { color: var(--cyan); border-color: rgba(34, 228, 255, 0.5); background: rgba(34, 228, 255, 0.08); }
+.tb-yt.on { color: #ff6b6b; border-color: rgba(255, 70, 70, 0.55); background: rgba(255, 50, 50, 0.1); }
+.btn.sm { min-height: 38px; padding: 0 12px; font-size: 0.85rem; display: inline-flex; align-items: center; text-decoration: none; color: inherit; }
+.btn.yt { border: 1px solid rgba(255, 70, 70, 0.6); color: #ff8a8a; background: rgba(255, 50, 50, 0.12); }
+
+.brano-overlay {
+  position: fixed; inset: 0; z-index: 100; background: var(--bg); display: flex; flex-direction: column;
+  padding: calc(10px + var(--safe-t)) 16px calc(16px + var(--safe-b)); animation: toast-in 0.2s ease-out;
+}
+.brano-head { display: flex; align-items: flex-start; gap: 12px; padding: 6px 0 10px; border-bottom: 1px solid var(--line); }
+.brano-head h2 { flex: 1; font-size: 1.35rem; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.brano-x { width: 48px; height: 48px; flex: none; border-radius: 14px; border: 1px solid var(--line-2); background: rgba(255,255,255,0.05); font-size: 1.3rem; color: var(--text); }
+.brano-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 10px 0; }
+.brano-link { display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; }
+.brano-link p { margin: 0; }
+.brano-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px; }
+.brano-testo { white-space: pre-wrap; font-family: Inter, sans-serif; line-height: 1.6; margin: 0; color: var(--text); }
+.brano-edit { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+.brano-textarea { flex: 1; min-height: 50vh; font-size: 16px; line-height: 1.5; }
