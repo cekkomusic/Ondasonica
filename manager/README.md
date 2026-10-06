@@ -178,6 +178,23 @@ aprirla da lì. I telefoni registrati sono in `config/notifiche`.
 **Prova manuale dell'invio** (da computer): `curl -H "Authorization: Bearer CRON_SECRET" "https://<sito>/api/promemoria?dry=1"`
 mostra i messaggi senza inviarli; `?force=1` invia subito.
 
+## App Android (APK)
+
+L'app web è installabile (manifest + icone PNG + service worker), quindi si può impacchettare come app Android
+"TWA" (Trusted Web Activity), che apre il sito a schermo intero e si aggiorna da sola con il sito.
+
+1. Vai su <https://www.pwabuilder.com>, incolla `https://ondasonica-manager.vercel.app` → **Start**.
+2. **Package For Stores → Android → Generate Package** (le opzioni predefinite vanno bene; package id es.
+   `app.vercel.ondasonica_manager.twa`). Scarica lo zip.
+3. Nello zip: il file **`.apk`** da distribuire (WhatsApp, Drive…), il file **`assetlinks.json`** e la chiave di firma
+   (`signing.keystore` + password in `signing-key-info.txt`). **Conserva la chiave**: serve per pubblicare
+   aggiornamenti dell'apk o metterla sul Play Store.
+4. Copia `assetlinks.json` in `public/.well-known/assetlinks.json` e pubblica: così l'app si apre senza la barra
+   dell'indirizzo del browser.
+
+Chi installa l'apk deve consentire "Installa app sconosciute" quando Android lo chiede. Su iPhone si usa
+"Aggiungi alla schermata Home".
+
 ## Sviluppo con emulatore (opzionale)
 
 Per provare senza toccare i dati veri: installa `firebase-tools`, avvia
