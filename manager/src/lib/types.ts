@@ -75,7 +75,7 @@ export interface SchedaTecnica {
   aggiornato: string | null;
   formazione: MembroFormazione[];
   stagePlot: { descrizione: string; immagineUrl: string };
-  backline: { batteria: string; basso: string; chitarre: string; tastiere: string; altro: string };
+  backline: { voce?: string; batteria: string; basso: string; chitarre: string; tastiere: string; altro: string };
   audio: { canaliRichiesti: string; microfoniRichiesti: string; monitoraggio: string; note: string };
   luci: { richiesteSpeciali: string; note: string };
   visualsProiezioni: { requisitiTecnici: string; schermoMinimo: string; note: string };
