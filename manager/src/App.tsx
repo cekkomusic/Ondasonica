@@ -13,6 +13,8 @@ const Spese = lazy(() => import("./pages/Spese"));
 const Scheda = lazy(() => import("./pages/Scheda"));
 const Scaletta = lazy(() => import("./pages/Scaletta"));
 const DatePrese = lazy(() => import("./pages/Date"));
+const Demo = lazy(() => import("./pages/Demo"));
+const Booking = lazy(() => import("./pages/Booking"));
 const Documenti = lazy(() => import("./pages/Documenti"));
 
 const NAV = [
@@ -69,6 +71,8 @@ function Shell() {
             <Route path="/concerti" element={<DatePrese />} />
             <Route path="/date" element={<DatePrese />} />
             <Route path="/calendario" element={<Calendario />} />
+            <Route path="/demo" element={<Demo />} />
+            <Route path="/booking" element={<Booking />} />
             <Route path="/documenti" element={<Documenti />} />
             <Route path="/documenti/:id" element={<Documenti />} />
             <Route path="*" element={<Home />} />
