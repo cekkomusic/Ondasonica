@@ -89,6 +89,20 @@ export default function Home() {
         <img className="logo" src="/logo.png" alt="Logo OndaSonicA – Subsonica Tribute Band" width={360} height={303} />
       </header>
 
+      {/* Accesso rapido per mostrare la band a un referente */}
+      <div className="pitch-grid">
+        <Link to="/demo" className="pitch-card pitch-demo">
+          <span className="pitch-ico">🎬</span>
+          <strong>DEMO</strong>
+          <span>Video live</span>
+        </Link>
+        <Link to="/booking" className="pitch-card pitch-booking">
+          <span className="pitch-ico">📸</span>
+          <strong>BOOKING</strong>
+          <span>Foto e contatti</span>
+        </Link>
+      </div>
+
       {prossima && (
         <Link to="/concerti" className="card glow-card next-gig">
           <p className="eyebrow">Prossimo concerto</p>
