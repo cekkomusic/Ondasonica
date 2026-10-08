@@ -1,4 +1,5 @@
 import { Fragment, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useCollection } from "../lib/hooks";
@@ -55,6 +56,10 @@ export default function Leads() {
           {filtered.length} di {leads.length} lead
         </p>
       </header>
+
+      <Link to="/locali/trova" className="btn primary block trova-btn">
+        🔎 Trova nuovi locali
+      </Link>
 
       <div className="search-wrap">
         <input
