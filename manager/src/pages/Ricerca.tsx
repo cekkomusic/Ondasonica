@@ -5,7 +5,7 @@ import type { Lead } from "../lib/types";
 import { PrioBadge } from "../components/Badges";
 import { Segmented } from "../components/Segmented";
 import { useSave } from "../components/Toast";
-import { aggiungiLead, chiaveNome, parseLista, PRIORITA_OK, vuoto, type Candidato } from "../lib/nuoviLead";
+import { aggiungiLead, giaPresenti, parseLista, PRIORITA_OK, vuoto, type Candidato } from "../lib/nuoviLead";
 import { copiaTesto } from "../lib/iban";
 
 const REGIONI = [
@@ -197,7 +197,7 @@ function DaLink({ leads, regione }: { leads: Lead[]; regione: string }) {
     }
   };
 
-  const gia = c.nome && leads.some((l) => chiaveNome(l.nome) === chiaveNome(c.nome));
+  const gia = c.nome && giaPresenti(leads)(c);
 
   return (
     <>
@@ -306,13 +306,13 @@ function ImportaLista({ leads }: { leads: Lead[] }) {
   const [testo, setTesto] = useState("");
   const [lista, setLista] = useState<Candidato[] | null>(null);
   const [scelti, setScelti] = useState<Set<number>>(new Set());
-  const nomi = useMemo(() => new Set(leads.map((l) => chiaveNome(l.nome))), [leads]);
+  const gia = useMemo(() => giaPresenti(leads), [leads]);
 
   const leggi = () => {
     try {
       const l = parseLista(testo);
       setLista(l);
-      setScelti(new Set(l.map((c, i) => (nomi.has(chiaveNome(c.nome)) ? -1 : i)).filter((i) => i >= 0)));
+      setScelti(new Set(l.map((c, i) => (gia(c) ? -1 : i)).filter((i) => i >= 0)));
       if (!l.length) save(Promise.reject(new Error("Nessun locale trovato nel testo.")));
     } catch (e) {
       save(Promise.reject(new Error(e instanceof SyntaxError ? "Testo non valido: incolla tutto il blocco che ti ho preparato." : (e as Error).message)));
@@ -340,7 +340,7 @@ function ImportaLista({ leads }: { leads: Lead[] }) {
               <CardCandidato
                 key={i}
                 r={r}
-                gia={nomi.has(chiaveNome(r.nome))}
+                gia={gia(r)}
                 on={scelti.has(i)}
                 onToggle={() =>
                   setScelti((s) => {

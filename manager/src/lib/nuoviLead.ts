@@ -54,12 +54,34 @@ export function parseLista(testo: string): Candidato[] {
   return arr.map((o) => (o && typeof o === "object" ? daOggetto(o as Record<string, unknown>) : null)).filter((c): c is Candidato => !!c);
 }
 
+const RE_EMAIL = /[a-z0-9._%+-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}/gi;
+const chiaveLuogo = (nome: string, comune: string) => `${chiaveNome(nome)}|${chiaveNome(comune.replace(/\(.*\)/, ""))}`;
+
+/** Riconosce i candidati già presenti tra i lead: stesso nome nello stesso comune, oppure stessa email. */
+export function giaPresenti(esistenti: Lead[]) {
+  const luoghi = new Set(esistenti.map((l) => chiaveLuogo(l.nome, l.comune ?? "")));
+  const email = new Set(esistenti.flatMap((l) => (l.contatto ?? "").match(RE_EMAIL) ?? []).map((e) => e.toLowerCase()));
+  return (c: Candidato) =>
+    luoghi.has(chiaveLuogo(c.nome, c.comune)) || (c.email.match(RE_EMAIL) ?? []).some((e) => email.has(e.toLowerCase()));
+}
+
+/** Firestore accetta al massimo 500 scritture per batch: le liste lunghe vanno a blocchi. */
+const BLOCCO = 400;
+
 export async function aggiungiLead(candidati: Candidato[], esistenti: Lead[]) {
-  const nomi = new Set(esistenti.map((l) => chiaveNome(l.nome)));
+  const gia = giaPresenti(esistenti);
   const ordineMax = esistenti.reduce((m, l) => Math.max(m, l.ordine ?? 0), 0);
-  const nuovi = candidati.filter((c) => c.nome.trim() && !nomi.has(chiaveNome(c.nome)));
-  const batch = writeBatch(db());
+  const visti = new Set<string>();
+  const nuovi = candidati.filter((c) => {
+    const k = chiaveLuogo(c.nome, c.comune);
+    if (!c.nome.trim() || gia(c) || visti.has(k)) return false;
+    visti.add(k);
+    return true;
+  });
+  const batches = [writeBatch(db())];
   nuovi.forEach((c, k) => {
+    if (k > 0 && k % BLOCCO === 0) batches.push(writeBatch(db()));
+    const batch = batches[batches.length - 1];
     const id = `${chiaveNome(c.nome).replace(/ /g, "-").slice(0, 50)}-${Date.now().toString(36)}${k}`;
     const contatto = [c.referente && `Ref. ${c.referente}`, c.email, c.telefono, c.social, c.sito].filter(Boolean).join(" | ");
     const lead: Lead & { origine: string } = {
@@ -82,6 +104,6 @@ export async function aggiungiLead(candidati: Candidato[], esistenti: Lead[]) {
     };
     batch.set(doc(db(), "leads", id), lead);
   });
-  await batch.commit();
+  for (const b of batches) await b.commit();
   return nuovi.length;
 }
