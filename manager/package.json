@@ -12,6 +12,7 @@
     "seed:force": "tsx scripts/seed.ts --force"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.132.1",
     "firebase": "^12.19.0",
     "firebase-admin": "^14.5.0",
     "html2canvas": "^1.4.1",
