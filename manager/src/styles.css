@@ -655,3 +655,21 @@ input[type="date"].input { color-scheme: dark; }
 .foto-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 64px; border: 0; border-radius: 12px; background: rgba(255,255,255,0.12); color: #fff; font-size: 2rem; }
 .foto-nav.prev { left: 8px; }
 .foto-nav.next { right: 8px; }
+
+/* ---------- Trova locali ---------- */
+.chips-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips-wrap .chip { min-height: 36px; }
+.ris-card { display: flex; flex-direction: column; gap: 6px; }
+.ris-card p { margin: 0; }
+.ris-card.on { border-color: var(--cyan); box-shadow: 0 0 18px -8px var(--cyan); }
+.ris-card.gia { opacity: 0.6; }
+.ris-head { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.ris-head input { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--cyan); flex: none; }
+.ris-contatti { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.ris-contatti a { color: var(--cyan); text-decoration: none; overflow-wrap: anywhere; }
+.trova-btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.query-card { display: flex; flex-direction: column; gap: 8px; }
+.query-text { display: block; font-size: 0.78rem; padding: 8px 10px; border-radius: 10px; background: rgba(0,0,0,0.35); border: 1px solid var(--line); color: #cfe9ff; overflow-wrap: anywhere; white-space: normal; }
+.estratto { display: flex; flex-direction: column; gap: 10px; }
+.estratto h3, .estratto p { margin: 0; }
+.scelte { display: flex; flex-direction: column; gap: 6px; }
