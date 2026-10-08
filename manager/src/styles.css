@@ -678,3 +678,7 @@ input[type="date"].input { color-scheme: dark; }
 .email-box { margin: 10px 0 4px; }
 .email-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
 .email-text { width: 100%; font-family: ui-monospace, Menlo, monospace; font-size: 0.85rem; resize: vertical; word-break: break-all; }
+.email-dim { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 0 10px; font-size: 0.9rem; }
+.email-dim select { width: auto; min-height: 36px; padding: 0 10px; }
+.email-pack { border-top: 1px solid var(--line, rgba(255,255,255,.08)); padding-top: 10px; margin-top: 10px; }
+.email-pack.fatto { opacity: 0.55; }
