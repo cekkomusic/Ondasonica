@@ -673,3 +673,8 @@ input[type="date"].input { color-scheme: dark; }
 .estratto { display: flex; flex-direction: column; gap: 10px; }
 .estratto h3, .estratto p { margin: 0; }
 .scelte { display: flex; flex-direction: column; gap: 6px; }
+
+/* Estrai email (Locali) */
+.email-box { margin: 10px 0 4px; }
+.email-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.email-text { width: 100%; font-family: ui-monospace, Menlo, monospace; font-size: 0.85rem; resize: vertical; word-break: break-all; }

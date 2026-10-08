@@ -10,6 +10,7 @@ import { Segmented } from "../components/Segmented";
 import { useSave } from "../components/Toast";
 import { dataIt, norm, today } from "../lib/format";
 import { Loading, ErrorBox } from "../components/States";
+import { copiaTesto } from "../lib/iban";
 
 const TUTTI = "";
 
@@ -22,6 +23,7 @@ export default function Leads() {
   const [stato, setStato] = useState(TUTTI);
   const [open, setOpen] = useState<string | null>(null);
   const [table, setTable] = useState(false);
+  const [mostraEmail, setMostraEmail] = useState(false);
 
   const regioni = useMemo(() => [...new Set(leads.map((l) => l.regione))].sort(), [leads]);
   const tipi = useMemo(() => [...new Set(leads.map((l) => l.tipo))].sort(), [leads]);
@@ -102,6 +104,12 @@ export default function Leads() {
           ))}
         </select>
       </div>
+
+      <button className="btn block" onClick={() => setMostraEmail(!mostraEmail)}>
+        📧 {mostraEmail ? "Nascondi email" : "Estrai tutte le email"}
+        <span className="muted"> · {filtriAttivi > 0 || q ? `${filtered.length} lead filtrati` : "tutti i lead"}</span>
+      </button>
+      {mostraEmail && <EstraiEmail leads={filtered} />}
 
       <div className="toolbar">
         {filtriAttivi > 0 || q ? (
@@ -298,5 +306,47 @@ function LeadTable({ leads, open, setOpen }: { leads: Lead[]; open: string | nul
         </tbody>
       </table>
     </div>
+  );
+}
+
+const RE_EMAIL = /[a-z0-9._%+-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}/gi;
+
+/** Tutte le email (senza doppioni) dei lead passati, nel formato "a@b.it; c@d.it; ". */
+function emailDaLead(leads: Pick<Lead, "contatto" | "notaUtente">[]) {
+  const viste = new Set<string>();
+  const out: string[] = [];
+  for (const l of leads) {
+    for (const m of `${l.contatto ?? ""} ${l.notaUtente ?? ""}`.match(RE_EMAIL) ?? []) {
+      const e = m.replace(/[.-]+$/, "");
+      const k = e.toLowerCase();
+      if (!viste.has(k)) {
+        viste.add(k);
+        out.push(e);
+      }
+    }
+  }
+  return out;
+}
+
+function EstraiEmail({ leads }: { leads: Lead[] }) {
+  const save = useSave();
+  const email = useMemo(() => emailDaLead(leads), [leads]);
+  const testo = email.map((e) => `${e}; `).join("");
+  return (
+    <section className="card email-box">
+      <div className="email-head">
+        <strong>
+          {email.length} email da {leads.length} lead
+        </strong>
+        <button className="btn primary sm" disabled={!email.length} onClick={() => save(copiaTesto(testo), "Email copiate")}>
+          📋 Copia
+        </button>
+      </div>
+      {email.length ? (
+        <textarea className="input email-text" readOnly value={testo} rows={6} onFocus={(e) => e.currentTarget.select()} />
+      ) : (
+        <p className="muted">Nessuna email nei lead selezionati.</p>
+      )}
+    </section>
   );
 }
