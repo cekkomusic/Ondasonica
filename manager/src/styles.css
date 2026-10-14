@@ -514,11 +514,13 @@ input[type="date"].input { color-scheme: dark; }
   border: 1px solid color-mix(in srgb, var(--ec) 45%, transparent); background: color-mix(in srgb, var(--ec) 10%, transparent); }
 .ev-prove { --ec: #ff8c3a; }
 .ev-passaggio { --ec: var(--cyan); }
+.ev-videocall { --ec: var(--violet); }
+.ev-telefonata { --ec: #3ddc84; }
 .band-ev-icona { font-size: 1.3rem; }
 .band-ev strong { color: color-mix(in srgb, var(--ec) 40%, white); }
 .band-ev-nota { display: block; font-size: 0.86rem; color: var(--text); overflow-wrap: anywhere; }
 .tipo-evento { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.tipo-btn { --ec: var(--cyan); min-height: 64px; border-radius: 14px; border: 1px solid var(--line-2); background: rgba(255,255,255,0.03);
+.tipo-btn { min-height: 64px; border-radius: 14px; border: 1px solid var(--line-2); background: rgba(255,255,255,0.03);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-weight: 600; font-size: 0.86rem; color: var(--muted); }
 .tipo-btn .tipo-icona { font-size: 1.5rem; }
 .tipo-btn.on { color: var(--text); border-color: var(--ec); background: color-mix(in srgb, var(--ec) 16%, transparent); box-shadow: 0 0 16px -6px var(--ec); }
@@ -678,3 +680,7 @@ input[type="date"].input { color-scheme: dark; }
 .email-box { margin: 10px 0 4px; }
 .email-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
 .email-text { width: 100%; font-family: ui-monospace, Menlo, monospace; font-size: 0.85rem; resize: vertical; word-break: break-all; }
+.email-dim { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 0 10px; font-size: 0.9rem; }
+.email-dim select { width: auto; min-height: 36px; padding: 0 10px; }
+.email-pack { border-top: 1px solid var(--line, rgba(255,255,255,.08)); padding-top: 10px; margin-top: 10px; }
+.email-pack.fatto { opacity: 0.55; }

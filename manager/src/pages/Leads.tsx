@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
@@ -328,25 +328,73 @@ function emailDaLead(leads: Pick<Lead, "contatto" | "notaUtente">[]) {
   return out;
 }
 
+const PACCHETTI = [50, 100, 200, 500];
+const formatta = (email: string[]) => email.map((e) => `${e}; `).join("");
+
 function EstraiEmail({ leads }: { leads: Lead[] }) {
   const save = useSave();
   const email = useMemo(() => emailDaLead(leads), [leads]);
-  const testo = email.map((e) => `${e}; `).join("");
+  const [dim, setDim] = useState(100);
+  const [copiati, setCopiati] = useState<Set<number>>(new Set());
+  const pacchetti = useMemo(() => {
+    const out: string[][] = [];
+    for (let i = 0; i < email.length; i += dim) out.push(email.slice(i, i + dim));
+    return out;
+  }, [email, dim]);
+  useEffect(() => setCopiati(new Set()), [email, dim]);
+
+  if (!email.length)
+    return (
+      <section className="card email-box">
+        <p className="muted">Nessuna email nei lead selezionati.</p>
+      </section>
+    );
+
   return (
     <section className="card email-box">
       <div className="email-head">
         <strong>
           {email.length} email da {leads.length} lead
         </strong>
-        <button className="btn primary sm" disabled={!email.length} onClick={() => save(copiaTesto(testo), "Email copiate")}>
-          📋 Copia
+        <button className="btn sm" onClick={() => save(copiaTesto(formatta(email)), "Tutte le email copiate")}>
+          📋 Copia tutte
         </button>
       </div>
-      {email.length ? (
-        <textarea className="input email-text" readOnly value={testo} rows={6} onFocus={(e) => e.currentTarget.select()} />
-      ) : (
-        <p className="muted">Nessuna email nei lead selezionati.</p>
-      )}
+      <label className="email-dim">
+        Pacchetti da
+        <select className="input" value={dim} onChange={(e) => setDim(Number(e.target.value))}>
+          {PACCHETTI.map((n) => (
+            <option key={n} value={n}>
+              {n} email
+            </option>
+          ))}
+        </select>
+        <span className="muted small">
+          {pacchetti.length} {pacchetti.length === 1 ? "pacchetto" : "pacchetti"} · {copiati.size} copiati
+        </span>
+      </label>
+      {pacchetti.map((p, i) => {
+        const da = i * dim + 1;
+        return (
+          <div key={i} className={`email-pack ${copiati.has(i) ? "fatto" : ""}`}>
+            <div className="email-head">
+              <strong>
+                {copiati.has(i) ? "✓ " : ""}Pacchetto {i + 1} <span className="muted small">({da}–{da + p.length - 1})</span>
+              </strong>
+              <button
+                className={`btn sm ${copiati.has(i) ? "" : "primary"}`}
+                onClick={() => {
+                  save(copiaTesto(formatta(p)), `Pacchetto ${i + 1} copiato`);
+                  setCopiati((c) => new Set(c).add(i));
+                }}
+              >
+                📋 Copia
+              </button>
+            </div>
+            <textarea className="input email-text" readOnly value={formatta(p)} rows={3} onFocus={(e) => e.currentTarget.select()} />
+          </div>
+        );
+      })}
     </section>
   );
 }

@@ -180,6 +180,8 @@ export default function Calendario() {
           <span>🎸 concerto</span>
           <span>🥁 prove</span>
           <span>🤝 passaggio locale</span>
+          <span>💻 videocall</span>
+          <span>📞 telefonata</span>
         </div>
         {eventiMese.length > 0 && (
           <ul className="cal-concerti">
@@ -301,7 +303,7 @@ function Giorno({
       </ul>
 
       {!io ? (
-        <p className="hint-box small">Scegli chi sei qui sopra per segnare i tuoi impegni (o BAND per prove e passaggi nei locali).</p>
+        <p className="hint-box small">Scegli chi sei qui sopra per segnare i tuoi impegni (o BAND per prove, passaggi nei locali, videocall e telefonate).</p>
       ) : io === BAND ? (
         <NuovoEventoBand giorno={giorno} />
       ) : (
@@ -331,6 +333,13 @@ function Giorno({
   );
 }
 
+const SEGNAPOSTO: Record<TipoEvento, string> = {
+  prove: "Es. ore 21, sala prove",
+  passaggio: "Es. ore 18, giro locali a Chieri e Rivoli",
+  videocall: "Es. ore 21, call su Meet per la scaletta",
+  telefonata: "Es. ore 15, chiamare il direttore artistico del Vinile",
+};
+
 function NuovoEventoBand({ giorno }: { giorno: string }) {
   const save = useSave();
   const [tipo, setTipo] = useState<TipoEvento>("prove");
@@ -350,7 +359,7 @@ function NuovoEventoBand({ giorno }: { giorno: string }) {
         className="input"
         value={nota}
         onChange={(e) => setNota(e.target.value)}
-        placeholder={tipo === "prove" ? "Es. ore 21, sala prove" : "Es. ore 18, giro locali a Chieri e Rivoli"}
+        placeholder={SEGNAPOSTO[tipo]}
       />
       <button
         className="btn primary block"
