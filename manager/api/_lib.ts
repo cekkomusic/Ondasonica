@@ -37,6 +37,8 @@ export function oraItalia(d = new Date()) {
 const TIPI: Record<string, { icona: string; label: string }> = {
   prove: { icona: "🥁", label: "Prove" },
   passaggio: { icona: "🤝", label: "Passaggio locale" },
+  videocall: { icona: "💻", label: "Videocall" },
+  telefonata: { icona: "📞", label: "Telefonata" },
 };
 
 interface Impegno {

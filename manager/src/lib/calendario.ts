@@ -26,13 +26,15 @@ export function salvaImpegno(giorno: string, membro: string, imp: Impegno) {
 export const isoDay = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-/* ---------- Eventi della band (prove, passaggi nei locali) ---------- */
+/* ---------- Eventi della band (prove, passaggi nei locali, videocall, telefonate) ---------- */
 
 export const BAND = "BAND";
 
 export const TIPI_EVENTO = {
   prove: { icona: "🥁", label: "Prove" },
   passaggio: { icona: "🤝", label: "Passaggio locale" },
+  videocall: { icona: "💻", label: "Videocall" },
+  telefonata: { icona: "📞", label: "Telefonata" },
 } as const;
 export type TipoEvento = keyof typeof TIPI_EVENTO;
 
