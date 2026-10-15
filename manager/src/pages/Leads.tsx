@@ -11,6 +11,7 @@ import { useSave } from "../components/Toast";
 import { dataIt, norm, today } from "../lib/format";
 import { Loading, ErrorBox } from "../components/States";
 import { copiaTesto } from "../lib/iban";
+import { Trattative } from "../components/Trattative";
 
 const TUTTI = "";
 
@@ -24,6 +25,7 @@ export default function Leads() {
   const [open, setOpen] = useState<string | null>(null);
   const [table, setTable] = useState(false);
   const [mostraEmail, setMostraEmail] = useState(false);
+  const [mostraTrattative, setMostraTrattative] = useState(false);
 
   const regioni = useMemo(() => [...new Set(leads.map((l) => l.regione))].sort(), [leads]);
   const tipi = useMemo(() => [...new Set(leads.map((l) => l.tipo))].sort(), [leads]);
@@ -62,6 +64,11 @@ export default function Leads() {
       <Link to="/locali/trova" className="btn primary block trova-btn">
         🔎 Trova nuovi locali
       </Link>
+
+      <button className={`btn block trattative-btn ${mostraTrattative ? "on" : ""}`} onClick={() => setMostraTrattative(!mostraTrattative)}>
+        📝 {mostraTrattative ? "Chiudi trattative" : "Trattative in corso"}
+      </button>
+      {mostraTrattative && <Trattative onClose={() => setMostraTrattative(false)} />}
 
       <div className="search-wrap">
         <input

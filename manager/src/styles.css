@@ -684,3 +684,10 @@ input[type="date"].input { color-scheme: dark; }
 .email-dim select { width: auto; min-height: 36px; padding: 0 10px; }
 .email-pack { border-top: 1px solid var(--line, rgba(255,255,255,.08)); padding-top: 10px; margin-top: 10px; }
 .email-pack.fatto { opacity: 0.55; }
+
+/* Trattative in corso (Locali) */
+.trattative-btn { margin-top: 8px; }
+.trattative-btn.on { border-color: var(--cyan); }
+.trattative { margin: 10px 0 4px; }
+.trattative-azioni { display: flex; gap: 6px; }
+.trattative-text { width: 100%; min-height: 260px; resize: vertical; line-height: 1.5; font-size: 0.95rem; }

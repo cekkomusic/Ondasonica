@@ -22,8 +22,10 @@ export function SyncedField({ value, onSave, multiline, placeholder, label, type
   const focused = useRef(false);
   const lastSaved = useRef(value);
   const timer = useRef<number | undefined>(undefined);
+  const remoto = useRef(value);
 
   useEffect(() => {
+    remoto.current = value;
     if (!focused.current) {
       setLocal(value);
       lastSaved.current = value;
@@ -53,7 +55,12 @@ export function SyncedField({ value, onSave, multiline, placeholder, label, type
     onFocus: () => (focused.current = true),
     onBlur: () => {
       focused.current = false;
-      flush(local);
+      if (local !== lastSaved.current) flush(local);
+      else if (remoto.current !== local) {
+        // nessuna modifica locale in sospeso: mostra quanto salvato nel frattempo da altri
+        setLocal(remoto.current);
+        lastSaved.current = remoto.current;
+      }
     },
   };
 
