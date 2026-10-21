@@ -10,7 +10,8 @@
     "typecheck": "tsc -b",
     "seed": "tsx scripts/seed.ts",
     "seed:force": "tsx scripts/seed.ts --force",
-    "rimuovi-email": "tsx scripts/rimuovi-email.ts"
+    "rimuovi-email": "tsx scripts/rimuovi-email.ts",
+    "importa-contatti": "tsx scripts/importa-contatti.ts"
   },
   "dependencies": {
     "firebase": "^12.19.0",
