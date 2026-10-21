@@ -106,5 +106,41 @@
     "noteRicerca": "Email trovata online, da verificare (mappatura 21/10/26)",
     "fonte": "https://www.facebook.com/proloco.monasterolodisavigliano/",
     "priorita": "Media"
+  },
+  {
+    "nome": "Pro Loco Paschera San Defendente",
+    "tipo": "Pro Loco",
+    "comune": "Caraglio",
+    "provincia": "CN",
+    "regione": "Piemonte",
+    "periodo": "",
+    "genere": "",
+    "tipologiaArtisti": "",
+    "email": "prolocopaschera@gmail.com",
+    "telefono": "",
+    "sito": "https://paschera.wordpress.com/",
+    "social": "",
+    "referente": "",
+    "noteRicerca": "Email trovata online, da verificare (mappatura 21/10/26)",
+    "fonte": "https://paschera.wordpress.com/",
+    "priorita": "Media"
+  },
+  {
+    "nome": "Pro Loco Cussanio",
+    "tipo": "Pro Loco",
+    "comune": "Fossano",
+    "provincia": "CN",
+    "regione": "Piemonte",
+    "periodo": "",
+    "genere": "",
+    "tipologiaArtisti": "",
+    "email": "prolococussanio@gmail.com",
+    "telefono": "",
+    "sito": "cussanio.blogspot.com",
+    "social": "",
+    "referente": "",
+    "noteRicerca": "Email trovata online, da verificare (mappatura 21/10/26)",
+    "fonte": "https://www.facebook.com/p/proloco_cussanio-100091130627256/",
+    "priorita": "Media"
   }
 ]
