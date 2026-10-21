@@ -70,5 +70,41 @@
     "noteRicerca": "Email trovata online, da verificare (mappatura 21/10/26)",
     "fonte": "https://comune.santalbanostura.cn.it/vivere-il-comune/il-territorio/associazioni/",
     "priorita": "Media"
+  },
+  {
+    "nome": "Pro Loco Savigliano",
+    "tipo": "Pro Loco",
+    "comune": "Savigliano",
+    "provincia": "CN",
+    "regione": "Piemonte",
+    "periodo": "",
+    "genere": "",
+    "tipologiaArtisti": "",
+    "email": "prolocosavigliano@gmail.com",
+    "telefono": "+39 339 894 0518",
+    "sito": "",
+    "social": "",
+    "referente": "",
+    "noteRicerca": "Email trovata online, da verificare (mappatura 21/10/26)",
+    "fonte": "https://visitsavigliano.it/ottobrando/",
+    "priorita": "Media"
+  },
+  {
+    "nome": "Pro Loco Monasterolo di Savigliano",
+    "tipo": "Pro Loco",
+    "comune": "Monasterolo di Savigliano",
+    "provincia": "CN",
+    "regione": "Piemonte",
+    "periodo": "",
+    "genere": "",
+    "tipologiaArtisti": "",
+    "email": "proloco.monasterolo@libero.it",
+    "telefono": "",
+    "sito": "https://www.prolocomonasterolo.com/",
+    "social": "",
+    "referente": "",
+    "noteRicerca": "Email trovata online, da verificare (mappatura 21/10/26)",
+    "fonte": "https://www.facebook.com/proloco.monasterolodisavigliano/",
+    "priorita": "Media"
   }
 ]
