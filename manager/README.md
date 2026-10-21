@@ -60,6 +60,7 @@ Consiglio: dal telefono, menu del browser → **"Aggiungi a schermata Home"** pe
 data/            seed iniziale (leads, attività, spese, scheda tecnica)
 docs/            strategia, EPK, template email (sola lettura nell'app)
 scripts/seed.ts  import una tantum dei dati in Firestore
+scripts/rimuovi-email.ts  toglie dai lead le email rimbalzate (npm run rimuovi-email -- elenco.txt [--applica])
 src/             codice dell'app
 firestore.rules  regole di sicurezza da pubblicare su Firebase
 ```
