@@ -1,11 +1,36 @@
 ---
 titolo: Bozze email di presentazione — stagione 2027
-aggiornato: 2026-09-16
+aggiornato: 2026-10-21
 ---
 
 # Bozze email per contattare i lead — stagione 2027
 
 Quattro template, uno per tipo di destinatario (i tipi corrispondono al campo "tipo" di data/leads.json). Personalizzare sempre i campi tra [ ] prima dell'invio, e allegare l'EPK (una volta completato con materiale reale) e, se disponibile, un link a video/audio.
+
+---
+
+## 0. Email proforma in uso (potenziali lead / agenzie)
+
+Testo standard da inviare così com'è ai potenziali lead.
+
+**Oggetto:** Proposta di collaborazione – Ondasonica, tributo ai Subsonica
+
+Buongiorno,
+
+siamo gli Ondasonica, una band tributo ai Subsonica con base a Torino.
+
+Vorremmo presentarvi il nostro progetto e valutare una possibile collaborazione con la vostra agenzia per concerti in locali, festival ed eventi.
+
+A questo link trovate video, social e tutte le informazioni sulla band:
+https://compact-salmon-6iiibnaj.edgeone.dev/
+
+Con chi possiamo confrontarci per proporre il nostro spettacolo ed eventualmente entrare a far parte del vostro roster artistico?
+
+Restiamo a disposizione per ulteriori informazioni e materiale tecnico.
+
+Grazie per l’attenzione e buona giornata!
+
+Ondasonica – Subsonica tribute band
 
 ---
 
