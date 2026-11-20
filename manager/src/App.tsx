@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, type ReactNode } from "react";
 import { NavLink, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { firebaseConfigured } from "./lib/firebase";
 import { ToastProvider } from "./components/Toast";
+import { Accesso } from "./components/Accesso";
 import { Loading } from "./components/States";
 import { tick } from "./lib/haptics";
 
@@ -31,9 +32,11 @@ const NAV = [
 export default function App() {
   if (!firebaseConfigured) return <SetupScreen />;
   return (
-    <ToastProvider>
-      <Shell />
-    </ToastProvider>
+    <Accesso>
+      <ToastProvider>
+        <Shell />
+      </ToastProvider>
+    </Accesso>
   );
 }
 
