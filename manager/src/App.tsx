@@ -54,6 +54,15 @@ function Shell() {
 
   useEffect(() => {
     migraAdryGiulio().catch((e) => console.warn("Migrazione Adry → Giulio non riuscita:", e));
+    // Dopo il login: se su questo telefono le notifiche erano già attive, le ri-registra
+    // come "entrato con la password", così continua a ricevere i promemoria.
+    let io = "";
+    try {
+      io = localStorage.getItem("ondasonica.me") ?? "";
+    } catch {
+      /* storage non disponibile */
+    }
+    if (io) import("./lib/notifiche").then((m) => m.rinnovaSeAttive(io)).catch(() => {});
   }, []);
 
   useSwipeNav((delta) => {
