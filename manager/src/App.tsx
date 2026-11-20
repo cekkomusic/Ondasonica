@@ -2,8 +2,10 @@ import { lazy, Suspense, useEffect, useRef, type ReactNode } from "react";
 import { NavLink, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { firebaseConfigured } from "./lib/firebase";
 import { ToastProvider } from "./components/Toast";
+import { Accesso } from "./components/Accesso";
 import { Loading } from "./components/States";
 import { tick } from "./lib/haptics";
+import { migraAdryGiulio } from "./lib/migrazioni";
 
 const Home = lazy(() => import("./pages/Home"));
 const Leads = lazy(() => import("./pages/Leads"));
@@ -31,9 +33,11 @@ const NAV = [
 export default function App() {
   if (!firebaseConfigured) return <SetupScreen />;
   return (
-    <ToastProvider>
-      <Shell />
-    </ToastProvider>
+    <Accesso>
+      <ToastProvider>
+        <Shell />
+      </ToastProvider>
+    </Accesso>
   );
 }
 
@@ -47,6 +51,10 @@ function Shell() {
     prevIdx.current = idx;
     window.scrollTo({ top: 0 });
   }, [idx, location.pathname]);
+
+  useEffect(() => {
+    migraAdryGiulio().catch((e) => console.warn("Migrazione Adry → Giulio non riuscita:", e));
+  }, []);
 
   useSwipeNav((delta) => {
     if (idx < 0) return;

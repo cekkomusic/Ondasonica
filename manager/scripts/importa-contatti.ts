@@ -16,6 +16,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { initializeApp } from "firebase/app";
+import { accedi } from "./accesso";
 import { collection, connectFirestoreEmulator, doc, getDoc, getDocs, getFirestore, terminate, writeBatch } from "firebase/firestore";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -104,6 +105,7 @@ const chiaveLuogo = (nome: string, comune: string) => `${chiaveNome(nome)}|${chi
 const emailDi = (s: string) => (s.match(RE_EMAIL) ?? []).map((e) => e.toLowerCase());
 
 async function main() {
+  await accedi(app);
   const contatti = JSON.parse(readFileSync(resolve(process.cwd(), file!), "utf8")) as Contatto[];
   const snap = await getDocs(collection(db, "leads"));
   const perEmail = new Map<string, string>();

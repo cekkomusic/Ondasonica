@@ -12,6 +12,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { initializeApp } from "firebase/app";
+import { accedi } from "./accesso";
 import { collection, connectFirestoreEmulator, doc, getDocs, getFirestore, terminate, writeBatch } from "firebase/firestore";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -77,6 +78,7 @@ function pulisci(testo: string) {
 }
 
 async function main() {
+  await accedi(app);
   console.log(`Indirizzi da togliere: ${esclusi.size}`);
   const snap = await getDocs(collection(db, "leads"));
   const modifiche: { id: string; nome: string; campi: Record<string, string>; tolte: number }[] = [];

@@ -1,17 +1,18 @@
 rules_version = '2';
 
-// ATTENZIONE: nessuna autenticazione. Chiunque conosca la configurazione
-// del progetto (cioè chiunque apra l'app) può leggere e scrivere queste
-// collezioni. È una scelta voluta: app per un gruppo di amici fidati.
-// Le regole limitano almeno l'accesso alle sole collezioni usate dall'app.
+// Accesso solo dopo il login con l'account condiviso della band
+// (Firebase Authentication, email + password: la password la conosce solo la band).
+// Le funzioni del server (promemoria, notifiche) usano l'account di servizio e
+// non passano da queste regole.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /leads/{id}    { allow read, write: if true; }
-    match /attivita/{id} { allow read, write: if true; }
-    match /spese/{id}    { allow read, write: if true; }
-    match /config/{id}   { allow read, write: if true; }
-    match /scalette/{id} { allow read, write: if true; }
-    match /date/{id}     { allow read, write: if true; }
+    function band() { return request.auth != null; }
+    match /leads/{id}    { allow read, write: if band(); }
+    match /attivita/{id} { allow read, write: if band(); }
+    match /spese/{id}    { allow read, write: if band(); }
+    match /config/{id}   { allow read, write: if band(); }
+    match /scalette/{id} { allow read, write: if band(); }
+    match /date/{id}     { allow read, write: if band(); }
     match /{document=**} { allow read, write: if false; }
   }
 }

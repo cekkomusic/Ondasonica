@@ -11,7 +11,7 @@ import { cent, dataIt, euro, today } from "../lib/format";
 import { ErrorBox, Loading } from "../components/States";
 
 // Persone esterne alla band che possono procurare date (non partecipano alle spese).
-const ESTERNI = ["FABRIZIO"];
+const ESTERNI: string[] = [];
 
 const giorno = (iso: string) =>
   iso ? new Date(iso + "T12:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) : "";
@@ -197,6 +197,12 @@ function Membri({ partecipanti, value, onChange }: { partecipanti: string[]; val
           {p}
         </button>
       ))}
+      {value && !partecipanti.includes(value) && (
+        // chi ha preso il concerto non è più nella formazione: resta scritto, ma non è più selezionabile
+        <span className="seg on ex" title="Non più nella formazione">
+          {value} <small>(ex)</small>
+        </span>
+      )}
     </div>
   );
 }

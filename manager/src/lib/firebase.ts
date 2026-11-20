@@ -1,4 +1,5 @@
 import { initializeApp, type FirebaseApp } from "firebase/app";
+import { connectAuthEmulator, getAuth, type Auth } from "firebase/auth";
 import {
   connectFirestoreEmulator,
   initializeFirestore,
@@ -42,4 +43,23 @@ export function db(): Firestore {
     }
   }
   return _db;
+}
+
+/**
+ * Accesso all'app: un unico account condiviso della band (Firebase Authentication,
+ * email + password). L'utente scrive solo la password; l'email è fissa.
+ * La password NON è nel codice: la verifica Firebase.
+ */
+export const EMAIL_ACCESSO = (import.meta.env.VITE_APP_LOGIN_EMAIL as string | undefined) || "band@ondasonica.app";
+
+let _auth: Auth | null = null;
+
+export function auth(): Auth {
+  if (!_auth) {
+    _auth = getAuth(app());
+    // Solo per test locale con l'emulatore di Firebase Auth (es. "localhost:9099").
+    const emu = import.meta.env.VITE_AUTH_EMULATOR as string | undefined;
+    if (emu) connectAuthEmulator(_auth, `http://${emu}`, { disableWarnings: true });
+  }
+  return _auth;
 }

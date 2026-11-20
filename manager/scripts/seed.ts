@@ -13,6 +13,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { initializeApp } from "firebase/app";
+import { accedi } from "./accesso";
 import { connectFirestoreEmulator, doc, getDoc, getFirestore, terminate, writeBatch } from "firebase/firestore";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -55,6 +56,7 @@ if (process.env.VITE_FIRESTORE_EMULATOR) {
 const load = <T>(name: string): T => JSON.parse(readFileSync(resolve(root, "data", name), "utf8"));
 
 async function main() {
+  await accedi(app);
   const marker = doc(db, "config", "seed");
   const existing = await getDoc(marker);
 

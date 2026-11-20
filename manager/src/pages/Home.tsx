@@ -1,3 +1,4 @@
+import { esci } from "../components/Accesso";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useCollection, useDocument } from "../lib/hooks";
@@ -259,6 +260,15 @@ export default function Home() {
         </div>
         <span>→</span>
       </Link>
+
+      <button
+        className="link-btn esci-btn"
+        onClick={() => {
+          if (confirm("Uscire? Per rientrare servirà di nuovo la password della band.")) esci();
+        }}
+      >
+        🔒 Esci dall'app
+      </button>
     </div>
   );
 }

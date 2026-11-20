@@ -8,13 +8,14 @@ import { useSave } from "../components/Toast";
 import { cent, dataIt, euro, today } from "../lib/format";
 import { ErrorBox, Loading } from "../components/States";
 import { IbanBox } from "../components/IbanBox";
+import { aggiornaNomi } from "../lib/migrazioni";
 import { aggiungiVoce, nomeDaRubrica, rimuoviVoce, useRubrica, type VoceRubrica } from "../lib/iban";
 
-export const PARTECIPANTI_DEFAULT = ["SBERLA", "CEKKO", "ADRY", "VALTER", "PHIL"];
+export const PARTECIPANTI_DEFAULT = ["SBERLA", "CEKKO", "GIULIO", "VALTER", "PHIL"];
 
 export function usePartecipanti() {
   const cfg = useDocument<SpeseConfig>("config", "spese");
-  const list = cfg.data?.partecipanti?.length ? cfg.data.partecipanti : PARTECIPANTI_DEFAULT;
+  const list = cfg.data?.partecipanti?.length ? aggiornaNomi(cfg.data.partecipanti) : PARTECIPANTI_DEFAULT;
   return { partecipanti: list, loading: cfg.loading };
 }
 

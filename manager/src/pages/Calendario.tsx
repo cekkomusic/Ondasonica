@@ -25,7 +25,14 @@ import { rinnovaSeAttive } from "../lib/notifiche";
 const GIORNI = ["L", "M", "M", "G", "V", "S", "D"];
 
 // Collaboratori che seguono video e audio live: presenti nel calendario ma non nelle spese.
-const CREW = ["SILVANO", "MATTEO"];
+const CREW = ["SILVANO"];
+
+/** Chi ha segnato qualcosa in un giorno ma non è più nella formazione (es. ADRY, MATTEO): resta visibile come "ex". */
+const ex = (giorno: Record<string, unknown>, partecipanti: string[]) =>
+  Object.keys(giorno).filter((k) => {
+    const v = giorno[k] as { nota?: string; indisponibile?: boolean } | undefined;
+    return k !== BAND && !partecipanti.includes(k) && !!v && typeof v === "object" && (!!v.nota || !!v.indisponibile);
+  });
 
 const leggi = <T,>(k: string, def: T): T => {
   try {
@@ -137,8 +144,9 @@ export default function Calendario() {
           {celle.map((d, i) => {
             if (!d) return <span key={i} />;
             const giorno = dati[d] ?? {};
-            const indisp = partecipanti.filter((p) => giorno[p]?.indisponibile);
-            const note = partecipanti.filter((p) => giorno[p] && !giorno[p].indisponibile && giorno[p].nota);
+            const tutti = [...partecipanti, ...ex(giorno, partecipanti)];
+            const indisp = tutti.filter((p) => giorno[p]?.indisponibile);
+            const note = tutti.filter((p) => giorno[p] && !giorno[p].indisponibile && giorno[p].nota);
             const mioIndisp = io && giorno[io]?.indisponibile;
             const live = concertiPerGiorno[d];
             const tipiBand = [...new Set(eventiBand(giorno).map((e) => e.tipo))];
@@ -286,13 +294,15 @@ function Giorno({
       )}
 
       <ul className="giorno-list">
-        {partecipanti.map((p) => {
+        {[...partecipanti, ...ex(dati ?? {}, partecipanti)].map((p) => {
           const imp = dati?.[p];
+          const exMembro = !partecipanti.includes(p);
           return (
             <li key={p} className={`${imp?.indisponibile ? "indisp" : ""} ${p === io ? "me" : ""}`}>
               <span className="who">
                 {p}
                 {CREW.includes(p) && <small className="crew-tag">crew</small>}
+                {exMembro && <small className="crew-tag">ex</small>}
               </span>
               <span className="grow giorno-nota">
                 {imp?.indisponibile && <span className="badge-indisp">INDISPONIBILE</span>} {imp?.nota || (!imp ? <span className="muted">—</span> : "")}
