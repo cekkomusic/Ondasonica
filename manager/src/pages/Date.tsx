@@ -11,7 +11,7 @@ import { cent, dataIt, euro, today } from "../lib/format";
 import { ErrorBox, Loading } from "../components/States";
 
 // Persone esterne alla band che possono procurare date (non partecipano alle spese).
-const ESTERNI = ["FABRIZIO"];
+const ESTERNI: string[] = [];
 
 const giorno = (iso: string) =>
   iso ? new Date(iso + "T12:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) : "";

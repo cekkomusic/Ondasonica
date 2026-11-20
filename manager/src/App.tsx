@@ -5,6 +5,7 @@ import { ToastProvider } from "./components/Toast";
 import { Accesso } from "./components/Accesso";
 import { Loading } from "./components/States";
 import { tick } from "./lib/haptics";
+import { migraAdryGiulio } from "./lib/migrazioni";
 
 const Home = lazy(() => import("./pages/Home"));
 const Leads = lazy(() => import("./pages/Leads"));
@@ -50,6 +51,10 @@ function Shell() {
     prevIdx.current = idx;
     window.scrollTo({ top: 0 });
   }, [idx, location.pathname]);
+
+  useEffect(() => {
+    migraAdryGiulio().catch((e) => console.warn("Migrazione Adry → Giulio non riuscita:", e));
+  }, []);
 
   useSwipeNav((delta) => {
     if (idx < 0) return;

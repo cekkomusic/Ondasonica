@@ -25,7 +25,7 @@ import { rinnovaSeAttive } from "../lib/notifiche";
 const GIORNI = ["L", "M", "M", "G", "V", "S", "D"];
 
 // Collaboratori che seguono video e audio live: presenti nel calendario ma non nelle spese.
-const CREW = ["SILVANO", "MATTEO"];
+const CREW = ["SILVANO"];
 
 const leggi = <T,>(k: string, def: T): T => {
   try {
