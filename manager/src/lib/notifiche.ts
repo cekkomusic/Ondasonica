@@ -1,5 +1,5 @@
 import { doc, setDoc } from "firebase/firestore";
-import { app, db } from "./firebase";
+import { app, auth, db } from "./firebase";
 
 const VAPID = import.meta.env.VITE_FIREBASE_VAPID_KEY as string | undefined;
 const LS_ID = "ondasonica.notificheId";
@@ -50,7 +50,13 @@ async function registraToken(membro: string) {
   const id = idDa(token);
   const vecchio = leggiId();
   const dispositivi: Record<string, unknown> = {
-    [id]: { token, membro: membro || null, aggiornato: new Date().toISOString(), ua: navigator.userAgent.slice(0, 120) },
+    [id]: {
+      token,
+      membro: membro || null,
+      uid: auth().currentUser?.uid ?? null, // segna che il telefono è entrato con la password
+      aggiornato: new Date().toISOString(),
+      ua: navigator.userAgent.slice(0, 120),
+    },
   };
   if (vecchio && vecchio !== id) {
     const { deleteField } = await import("firebase/firestore");

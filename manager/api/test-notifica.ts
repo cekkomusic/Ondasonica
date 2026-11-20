@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   const oggi = oraItalia().giorno;
   const { giorno, concerti, dispositivi } = await datiGiorno(oggi);
   const d = dispositivi[id];
-  if (!d) return json({ errore: "dispositivo non registrato" }, 404);
+  if (!d) return json({ errore: "dispositivo non registrato: entra nell'app con la password e riattiva le notifiche" }, 404);
   if (d.ultimoTest && Date.now() - Date.parse(d.ultimoTest) < 60_000) return json({ errore: "aspetta un minuto prima di riprovare" }, 429);
   await db.doc("config/notifiche").set({ dispositivi: { [id]: { ultimoTest: new Date().toISOString() } } }, { merge: true });
 

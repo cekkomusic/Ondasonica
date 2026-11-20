@@ -82,6 +82,8 @@ export function titoloGiorno(iso: string) {
 export interface Dispositivo {
   token: string;
   membro?: string;
+  /** Utente Firebase che ha registrato il telefono: presente solo se è entrato con la password della band. */
+  uid?: string | null;
   aggiornato?: string;
   ultimoTest?: string;
 }
@@ -96,7 +98,10 @@ export async function datiGiorno(iso: string) {
   ]);
   const giorno = ((cal.data() ?? {})[iso] ?? {}) as GiornoCal;
   const concerti = concertiSnap.docs.map((d) => d.data() as Concerto);
-  const dispositivi = ((disp.data() ?? {}).dispositivi ?? {}) as Record<string, Dispositivo>;
+  const tutti = ((disp.data() ?? {}).dispositivi ?? {}) as Record<string, Dispositivo>;
+  // Solo i telefoni registrati dopo aver inserito la password ricevono i promemoria:
+  // chi aveva l'app installata prima e non è entrato con la password è escluso.
+  const dispositivi = Object.fromEntries(Object.entries(tutti).filter(([, d]) => d && d.token && d.uid));
   return { giorno, concerti, dispositivi };
 }
 

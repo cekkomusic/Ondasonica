@@ -13,7 +13,16 @@ export function Accesso({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-export const esci = () => signOut(auth());
+/** Esce dall'app: questo telefono smette anche di ricevere i promemoria. */
+export async function esci() {
+  try {
+    const { disattivaNotifiche } = await import("../lib/notifiche");
+    await disattivaNotifiche();
+  } catch {
+    /* se fallisce si esce comunque */
+  }
+  await signOut(auth());
+}
 
 function messaggio(code: string) {
   if (["auth/invalid-credential", "auth/wrong-password", "auth/invalid-login-credentials", "auth/user-not-found"].includes(code))
