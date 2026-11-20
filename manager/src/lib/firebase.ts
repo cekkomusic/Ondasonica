@@ -50,7 +50,7 @@ export function db(): Firestore {
  * email + password). L'utente scrive solo la password; l'email è fissa.
  * La password NON è nel codice: la verifica Firebase.
  */
-export const EMAIL_ACCESSO = (import.meta.env.VITE_APP_LOGIN_EMAIL as string | undefined) || "band@ondasonica.app";
+export const EMAIL_ACCESSO = (import.meta.env.VITE_APP_LOGIN_EMAIL as string | undefined) || "ondasonicatorino@gmail.com";
 
 let _auth: Auth | null = null;
 
