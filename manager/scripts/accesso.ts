@@ -13,6 +13,6 @@ export async function accedi(app: FirebaseApp) {
     console.error("✗ Imposta la password della band: ONDASONICA_PASSWORD='…' npm run …");
     process.exit(1);
   }
-  const email = process.env.VITE_APP_LOGIN_EMAIL || "band@ondasonica.app";
+  const email = process.env.VITE_APP_LOGIN_EMAIL || "ondasonicatorino@gmail.com";
   await signInWithEmailAndPassword(getAuth(app), email, password);
 }
