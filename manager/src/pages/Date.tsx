@@ -197,6 +197,12 @@ function Membri({ partecipanti, value, onChange }: { partecipanti: string[]; val
           {p}
         </button>
       ))}
+      {value && !partecipanti.includes(value) && (
+        // chi ha preso il concerto non è più nella formazione: resta scritto, ma non è più selezionabile
+        <span className="seg on ex" title="Non più nella formazione">
+          {value} <small>(ex)</small>
+        </span>
+      )}
     </div>
   );
 }

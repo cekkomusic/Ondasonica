@@ -1,4 +1,4 @@
-import { collection, deleteField, doc, documentId, getDoc, getDocs, query, setDoc, where, writeBatch, type WriteBatch } from "firebase/firestore";
+import { collection, deleteField, doc, getDoc, getDocs, setDoc, writeBatch, type WriteBatch } from "firebase/firestore";
 import { db } from "./firebase";
 
 /** Formazione aggiornata: Giulio prende il posto di Adry, Matteo e Fabrizio non ci sono più. */
@@ -11,8 +11,8 @@ export const aggiornaNomi = (lista: string[]) =>
   [...new Set(lista.map((p) => (p === VECCHIO ? NUOVO : p)))].filter((p) => !USCITI.includes(p));
 
 /**
- * Sposta una volta sola i dati di Adry su Giulio (quote delle spese, calendario,
- * scaletta personale, concerti presi) e toglie Matteo/Fabrizio dai partecipanti.
+ * Sposta una volta sola su Giulio le quote delle spese e la scaletta personale di Adry
+ * e toglie Matteo/Fabrizio dai partecipanti. Calendario e concerti restano a nome di Adry/Fabrizio.
  * Gira al primo accesso di chiunque; poi segna config/migrazioni.adryGiulio.
  */
 export async function migraAdryGiulio() {
@@ -43,19 +43,8 @@ export async function migraAdryGiulio() {
     if (Object.keys(campi).length) b().update(s.ref, campi);
   }
 
-  // Calendario (un documento per mese: config/calendario-AAAA-MM)
-  const mesi = await getDocs(query(collection(db(), "config"), where(documentId(), ">=", "calendario-"), where(documentId(), "<", "calendario.")));
-  for (const m of mesi.docs) {
-    const campi: Record<string, unknown> = {};
-    for (const [giorno, v] of Object.entries(m.data())) {
-      const g = v as Record<string, unknown> | null;
-      if (g && typeof g === "object" && g[VECCHIO] && !g[NUOVO]) {
-        campi[`${giorno}.${NUOVO}`] = g[VECCHIO];
-        campi[`${giorno}.${VECCHIO}`] = deleteField();
-      }
-    }
-    if (Object.keys(campi).length) b().update(m.ref, campi);
-  }
+  // Calendario e concerti "presi da" NON si toccano: restano a nome di chi li ha segnati
+  // (ADRY, FABRIZIO, MATTEO) e l'app li mostra come "ex".
 
   // Scaletta personale
   const sv = await getDoc(doc(db(), "scalette", VECCHIO));
@@ -64,9 +53,6 @@ export async function migraAdryGiulio() {
     if (!sn.exists()) b().set(sn.ref, sv.data());
     b().delete(sv.ref);
   }
-
-  // Concerti "presi da"
-  for (const d of (await getDocs(query(collection(db(), "date"), where("presaDa", "==", VECCHIO)))).docs) b().update(d.ref, { presaDa: NUOVO });
 
   for (const x of batches) await x.commit();
   await setDoc(flag, { adryGiulio: new Date().toISOString() }, { merge: true });

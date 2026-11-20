@@ -700,3 +700,4 @@ input[type="date"].input { color-scheme: dark; }
 .accesso-campo .input { flex: 1; }
 .accesso-errore { color: #ff6b81; font-size: 0.9rem; margin: 0; }
 .esci-btn { display: block; margin: 18px auto 0; }
+.seg.ex { opacity: 0.75; font-style: italic; cursor: default; }
