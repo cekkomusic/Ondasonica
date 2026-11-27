@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDocFromServer, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useDocument } from "../lib/hooks";
 import type { MembroFormazione, SchedaTecnica } from "../lib/types";
@@ -27,7 +27,16 @@ export default function Scheda() {
         </header>
         <div className="card">
           <p>La scheda tecnica non è ancora nel database.</p>
-          <button className="btn primary" onClick={() => save(setDoc(REF(), schedaSeed), "Scheda creata")}>
+          <button className="btn primary" onClick={() =>
+              save(
+                // ricontrolla sul server: non sovrascrivere mai una scheda già compilata
+                getDocFromServer(REF()).then((d) => {
+                  if (d.exists()) throw new Error("la scheda esiste già: ricarica la pagina");
+                  return setDoc(REF(), schedaSeed);
+                }),
+                "Scheda creata",
+              )
+            }>
             Crea scheda vuota
           </button>
         </div>

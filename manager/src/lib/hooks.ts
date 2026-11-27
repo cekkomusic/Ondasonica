@@ -15,12 +15,16 @@ export function useCollection<T extends { id: string }>(name: string): Live<T[]>
     () =>
       onSnapshot(
         collection(db(), name),
-        (snap) =>
+        (snap) => {
+          // Su un dispositivo nuovo la prima risposta arriva dalla cache vuota: aspetta il server
+          // invece di mostrare "vuoto" (che poteva far ricreare dati già esistenti).
+          if (snap.empty && snap.metadata.fromCache) return;
           setState({
             data: snap.docs.map((d) => ({ ...(d.data() as Omit<T, "id">), id: d.id }) as T),
             loading: false,
             error: null,
-          }),
+          });
+        },
         (err) => setState((s) => ({ ...s, loading: false, error: err.message })),
       ),
     [name],
@@ -35,7 +39,11 @@ export function useDocument<T>(path: string, id: string): Live<T | null> {
     () =>
       onSnapshot(
         doc(db(), path, id),
-        (snap) => setState({ data: snap.exists() ? (snap.data() as T) : null, loading: false, error: null }),
+        (snap) => {
+          // "Non esiste" letto solo dalla cache locale non è affidabile: aspetta la conferma del server.
+          if (!snap.exists() && snap.metadata.fromCache) return;
+          setState({ data: snap.exists() ? (snap.data() as T) : null, loading: false, error: null });
+        },
         (err) => setState((s) => ({ ...s, loading: false, error: err.message })),
       ),
     [path, id],

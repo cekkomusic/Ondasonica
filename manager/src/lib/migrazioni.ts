@@ -1,4 +1,4 @@
-import { collection, deleteField, doc, getDoc, getDocs, setDoc, writeBatch, type WriteBatch } from "firebase/firestore";
+import { collection, deleteField, doc, getDoc, getDocs, setDoc, updateDoc, writeBatch, type WriteBatch } from "firebase/firestore";
 import { db } from "./firebase";
 
 /** Formazione aggiornata: Giulio prende il posto di Adry, Matteo e Fabrizio non ci sono più. */
@@ -56,4 +56,31 @@ export async function migraAdryGiulio() {
 
   for (const x of batches) await x.commit();
   await setDoc(flag, { adryGiulio: new Date().toISOString() }, { merge: true });
+}
+
+/**
+ * Ripristino della scheda tecnica (azzerata per errore a novembre 2026) dal PDF del 7/10/2026,
+ * con Giulio al posto di Adry, senza il fonico e con il basso diretto nel Behringer X18.
+ * Riempie solo i campi vuoti: non tocca nulla che la band abbia già riscritto. Gira una volta sola.
+ */
+export async function ripristinaScheda() {
+  const flag = doc(db(), "config", "migrazioni");
+  if ((await getDoc(flag)).data()?.schedaRipristino2026) return;
+  const backup = (await import("../../data/scheda_ripristino_2026.json")).default as Record<string, unknown>;
+  const ref = doc(db(), "config", "schedaTecnica");
+  const attuale = ((await getDoc(ref)).data() ?? {}) as Record<string, unknown>;
+  const vuoto = (v: unknown) => v === undefined || v === null || (typeof v === "string" && !v.trim()) || (Array.isArray(v) && !v.length);
+  const campi: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(backup)) {
+    if (v && typeof v === "object" && !Array.isArray(v)) {
+      const sezione = (attuale[k] ?? {}) as Record<string, unknown>;
+      for (const [c, val] of Object.entries(v as Record<string, unknown>)) if (vuoto(sezione[c]) && !vuoto(val)) campi[`${k}.${c}`] = val;
+    } else if (vuoto(attuale[k]) && !vuoto(v)) campi[k] = v;
+  }
+  if (Object.keys(campi).length) {
+    campi.aggiornato = new Date().toISOString();
+    if (Object.keys(attuale).length) await updateDoc(ref, campi);
+    else await setDoc(ref, { ...backup, aggiornato: campi.aggiornato });
+  }
+  await setDoc(flag, { schedaRipristino2026: new Date().toISOString() }, { merge: true });
 }

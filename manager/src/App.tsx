@@ -5,7 +5,7 @@ import { ToastProvider } from "./components/Toast";
 import { Accesso } from "./components/Accesso";
 import { Loading } from "./components/States";
 import { tick } from "./lib/haptics";
-import { migraAdryGiulio } from "./lib/migrazioni";
+import { migraAdryGiulio, ripristinaScheda } from "./lib/migrazioni";
 
 const Home = lazy(() => import("./pages/Home"));
 const Leads = lazy(() => import("./pages/Leads"));
@@ -54,6 +54,7 @@ function Shell() {
 
   useEffect(() => {
     migraAdryGiulio().catch((e) => console.warn("Migrazione Adry → Giulio non riuscita:", e));
+    ripristinaScheda().catch((e) => console.warn("Ripristino scheda tecnica non riuscito:", e));
     // Dopo il login: se su questo telefono le notifiche erano già attive, le ri-registra
     // come "entrato con la password", così continua a ricevere i promemoria.
     let io = "";
