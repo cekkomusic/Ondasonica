@@ -19,6 +19,7 @@ const Demo = lazy(() => import("./pages/Demo"));
 const Booking = lazy(() => import("./pages/Booking"));
 const Ricerca = lazy(() => import("./pages/Ricerca"));
 const Documenti = lazy(() => import("./pages/Documenti"));
+const Collegamenti = lazy(() => import("./pages/Collegamenti"));
 
 const NAV = [
   { to: "/", label: "Home", icon: <IconHome /> },
@@ -87,6 +88,7 @@ function Shell() {
             <Route path="/attivita" element={<Attivita />} />
             <Route path="/spese" element={<Spese />} />
             <Route path="/scheda" element={<Scheda />} />
+            <Route path="/scheda/collegamenti" element={<Collegamenti />} />
             <Route path="/scaletta" element={<Scaletta />} />
             <Route path="/concerti" element={<DatePrese />} />
             <Route path="/date" element={<DatePrese />} />

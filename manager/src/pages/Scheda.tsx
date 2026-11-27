@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { doc, getDocFromServer, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useDocument } from "../lib/hooks";
@@ -59,6 +60,15 @@ export default function Scheda() {
       <p className="hint-box small">Ogni campo si salva da solo mentre scrivi. Le modifiche sono visibili subito a tutta la band.</p>
 
       <EsportaScheda scheda={data} />
+
+      <Link to="/scheda/collegamenti" className="card doc-link">
+        <span>🔌</span>
+        <div className="grow">
+          <strong>Schema collegamenti</strong>
+          <p className="muted small">Cavi tra strumenti, mixer batteria, Behringer X18, in-ear e spie</p>
+        </div>
+        <span>→</span>
+      </Link>
 
       <Formazione membri={data.formazione ?? []} onSave={(f) => setField("formazione", f)} />
 

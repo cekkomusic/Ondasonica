@@ -1,6 +1,8 @@
 import { forwardRef } from "react";
 import type { SchedaTecnica } from "../lib/types";
 import { SEZIONI } from "../lib/schedaSezioni";
+import { etichetta, type Collegamenti } from "../lib/collegamenti";
+import { SchemaCollegamenti } from "./SchemaCollegamenti";
 
 const pieno = (v?: string) => Boolean(v && v.trim());
 
@@ -21,8 +23,8 @@ function Righe({ testo }: { testo: string }) {
 }
 
 /** Versione stampabile della scheda tecnica (sfondo chiaro, larghezza A4). Solo i campi compilati. */
-export const FoglioScheda = forwardRef<HTMLDivElement, { scheda: SchedaTecnica; immagine?: string; erroreImmagine?: string }>(
-  function FoglioScheda({ scheda, immagine, erroreImmagine }, ref) {
+export const FoglioScheda = forwardRef<HTMLDivElement, { scheda: SchedaTecnica; immagine?: string; erroreImmagine?: string; collegamenti?: Collegamenti }>(
+  function FoglioScheda({ scheda, immagine, erroreImmagine, collegamenti }, ref) {
     const formazione = (scheda.formazione ?? []).filter((m) => pieno(m.nome) || pieno(m.ruolo));
     const aggiornato = scheda.aggiornato ? new Date(scheda.aggiornato).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" }) : "";
     return (
@@ -84,6 +86,27 @@ export const FoglioScheda = forwardRef<HTMLDivElement, { scheda: SchedaTecnica; 
             </section>
           );
         })}
+
+        {collegamenti && collegamenti.cavi.length > 0 && (
+          <section data-blocco>
+            <h2>Schema collegamenti</h2>
+            <div className="foglio-schema" data-riga>
+              <SchemaCollegamenti dati={collegamenti} stampa />
+            </div>
+            <table className="foglio-tab foglio-cavi">
+              <tbody>
+                {collegamenti.cavi.map((c) => (
+                  <tr key={c.id} data-riga>
+                    <td className="k">{c.nome || "—"}</td>
+                    <td>
+                      {etichetta(c.da, collegamenti.canali)} → {etichetta(c.a, collegamenti.canali)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        )}
 
         {pieno(scheda.noteGenerali) && (
           <section data-blocco>
