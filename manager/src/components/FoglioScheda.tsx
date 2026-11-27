@@ -4,6 +4,22 @@ import { SEZIONI } from "../lib/schedaSezioni";
 
 const pieno = (v?: string) => Boolean(v && v.trim());
 
+/** Testo su più righe: ogni riga è un blocco separato, così il PDF può andare a capo pagina tra una riga e l'altra. */
+function Righe({ testo }: { testo: string }) {
+  return (
+    <>
+      {testo
+        .replace(/\s+$/, "")
+        .split("\n")
+        .map((r, i) => (
+          <div key={i} className="foglio-riga" data-riga>
+            {r || "\u00a0"}
+          </div>
+        ))}
+    </>
+  );
+}
+
 /** Versione stampabile della scheda tecnica (sfondo chiaro, larghezza A4). Solo i campi compilati. */
 export const FoglioScheda = forwardRef<HTMLDivElement, { scheda: SchedaTecnica; immagine?: string; erroreImmagine?: string }>(
   function FoglioScheda({ scheda, immagine, erroreImmagine }, ref) {
@@ -26,7 +42,7 @@ export const FoglioScheda = forwardRef<HTMLDivElement, { scheda: SchedaTecnica; 
             <table className="foglio-tab">
               <tbody>
                 {formazione.map((m, i) => (
-                  <tr key={i}>
+                  <tr key={i} data-riga>
                     <td className="k">{m.nome}</td>
                     <td>{m.ruolo}</td>
                   </tr>
@@ -48,15 +64,17 @@ export const FoglioScheda = forwardRef<HTMLDivElement, { scheda: SchedaTecnica; 
                 <table className="foglio-tab">
                   <tbody>
                     {campi.map(([k, c]) => (
-                      <tr key={k}>
+                      <tr key={k} data-riga>
                         <td className="k">{c.label}</td>
-                        <td className="pre">{valori[k]}</td>
+                        <td className="pre">
+                          <Righe testo={valori[k]} />
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               )}
-              {sez.key === "stagePlot" && immagine && <img className="foglio-plot" src={immagine} alt="Stage plot" />}
+              {sez.key === "stagePlot" && immagine && <img className="foglio-plot" src={immagine} alt="Stage plot" data-riga />}
               {sez.key === "stagePlot" && !immagine && pieno(valori.immagineUrl) && (
                 <p className="foglio-nota">
                   Immagine stage plot: {valori.immagineUrl}
@@ -70,7 +88,9 @@ export const FoglioScheda = forwardRef<HTMLDivElement, { scheda: SchedaTecnica; 
         {pieno(scheda.noteGenerali) && (
           <section data-blocco>
             <h2>Note generali</h2>
-            <p className="pre">{scheda.noteGenerali}</p>
+            <div className="pre">
+              <Righe testo={scheda.noteGenerali} />
+            </div>
           </section>
         )}
 

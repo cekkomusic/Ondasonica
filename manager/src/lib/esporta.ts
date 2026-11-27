@@ -36,27 +36,33 @@ export async function generaFile(el: HTMLElement, formato: Formato, nome: string
     return new File([blob], `${nome}.jpg`, { type: "image/jpeg" });
   }
 
-  // PDF A4: il foglio viene diviso in pagine, tagliando tra un blocco e l'altro quando possibile.
+  // PDF A4: il foglio viene diviso in pagine tagliando SOLO tra una riga e l'altra
+  // (mai a metà di una scritta), con un margine bianco in alto e in basso su ogni pagina.
   const { jsPDF } = await import("jspdf");
   const pdf = new jsPDF({ unit: "pt", format: "a4", orientation: "portrait" });
   const pw = pdf.internal.pageSize.getWidth();
   const ph = pdf.internal.pageSize.getHeight();
   const pxPerPt = canvas.width / pw;
-  const pagePx = Math.floor(ph * pxPerPt);
+  const margine = 28; // pt
+  const utilePx = Math.floor((ph - 2 * margine) * pxPerPt);
 
-  // Punti di taglio "buoni": i bordi inferiori dei blocchi [data-blocco], in pixel del canvas.
-  const top = el.getBoundingClientRect().top;
-  const scala = canvas.width / el.getBoundingClientRect().width;
-  const tagli = Array.from(el.querySelectorAll<HTMLElement>("[data-blocco]"))
-    .map((b) => Math.round((b.getBoundingClientRect().bottom - top) * scala))
-    .sort((a, b) => a - b);
+  // Punti di taglio sicuri: fine di ogni riga di testo, riga di tabella, immagine e sezione.
+  // Il fondo di un titolo di sezione non è un punto di taglio (il titolo resta col suo contenuto).
+  const rect = el.getBoundingClientRect();
+  const scala = canvas.width / rect.width;
+  const tagli = [...new Set(
+    Array.from(el.querySelectorAll<HTMLElement>("[data-blocco], [data-riga]")).map((b) => Math.round((b.getBoundingClientRect().bottom - rect.top) * scala)),
+  )].sort((a, b) => a - b);
 
   let y = 0;
-  let prima = true;
+  let pagina = 0;
   while (y < canvas.height - 2) {
-    let fine = Math.min(y + pagePx, canvas.height);
+    // la prima pagina parte dall'intestazione (che ha già il suo margine), le altre con margine in alto
+    const alto = pagina === 0 ? 0 : margine;
+    const spazio = pagina === 0 ? Math.floor((ph - margine) * pxPerPt) : utilePx;
+    let fine = Math.min(y + spazio, canvas.height);
     if (fine < canvas.height) {
-      const buono = tagli.filter((t) => t > y + pagePx * 0.4 && t <= fine).pop();
+      const buono = tagli.filter((t) => t > y + spazio * 0.3 && t <= fine).pop();
       if (buono) fine = buono;
     }
     const pezzo = document.createElement("canvas");
@@ -66,9 +72,9 @@ export async function generaFile(el: HTMLElement, formato: Formato, nome: string
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, pezzo.width, pezzo.height);
     ctx.drawImage(canvas, 0, y, canvas.width, fine - y, 0, 0, canvas.width, fine - y);
-    if (!prima) pdf.addPage();
-    pdf.addImage(pezzo.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, pw, (fine - y) / pxPerPt);
-    prima = false;
+    if (pagina > 0) pdf.addPage();
+    pdf.addImage(pezzo.toDataURL("image/jpeg", 0.92), "JPEG", 0, alto, pw, (fine - y) / pxPerPt);
+    pagina++;
     y = fine;
   }
   return new File([pdf.output("blob")], `${nome}.pdf`, { type: "application/pdf" });
