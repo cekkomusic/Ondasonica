@@ -6,6 +6,8 @@ import { caricaImmagine, generaFile, puoCondividereFile, scaricaFile, type Forma
 import { useSave } from "./Toast";
 import { tick } from "../lib/haptics";
 import { today } from "../lib/format";
+import { useDocument } from "../lib/hooks";
+import { predefiniti, type Collegamenti } from "../lib/collegamenti";
 
 const TESTO = "Scheda tecnica di OndaSonicA – Subsonica Tribute Band";
 
@@ -17,6 +19,8 @@ export function EsportaScheda({ scheda }: { scheda: SchedaTecnica }) {
   const [file, setFile] = useState<File | null>(null);
   const [img, setImg] = useState<{ src?: string; errore?: string }>({});
   const foglio = useRef<HTMLDivElement>(null);
+  const coll = useDocument<Collegamenti>("config", "collegamenti");
+  const collegamenti = coll.data?.cavi ? { cavi: coll.data.cavi, canali: coll.data.canali ?? {} } : predefiniti();
   const url = scheda.stagePlot?.immagineUrl?.trim() ?? "";
 
   // Prepara l'immagine dello stage plot quando si apre il pannello.
@@ -139,7 +143,7 @@ export function EsportaScheda({ scheda }: { scheda: SchedaTecnica }) {
       {/* Foglio fuori schermo usato per generare il file */}
       {createPortal(
         <div className="foglio-wrap" aria-hidden>
-          <FoglioScheda ref={foglio} scheda={scheda} immagine={img.src} erroreImmagine={img.errore} />
+          <FoglioScheda ref={foglio} scheda={scheda} immagine={img.src} erroreImmagine={img.errore} collegamenti={collegamenti} />
         </div>,
         document.body,
       )}

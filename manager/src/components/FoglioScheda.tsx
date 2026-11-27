@@ -1,83 +1,167 @@
-import { forwardRef } from "react";
+import { forwardRef, Fragment } from "react";
 import type { SchedaTecnica } from "../lib/types";
 import { SEZIONI } from "../lib/schedaSezioni";
+import { etichetta, type Collegamenti } from "../lib/collegamenti";
+import { SchemaCollegamenti } from "./SchemaCollegamenti";
 
 const pieno = (v?: string) => Boolean(v && v.trim());
 
-/** Versione stampabile della scheda tecnica (sfondo chiaro, larghezza A4). Solo i campi compilati. */
-export const FoglioScheda = forwardRef<HTMLDivElement, { scheda: SchedaTecnica; immagine?: string; erroreImmagine?: string }>(
-  function FoglioScheda({ scheda, immagine, erroreImmagine }, ref) {
-    const formazione = (scheda.formazione ?? []).filter((m) => pieno(m.nome) || pieno(m.ruolo));
-    const aggiornato = scheda.aggiornato ? new Date(scheda.aggiornato).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" }) : "";
-    return (
-      <div ref={ref} className="foglio">
-        <header className="foglio-head" data-blocco>
-          <img src="/logo.png" alt="" className="foglio-logo" />
-          <div>
-            <p className="foglio-kicker">Scheda tecnica · Rider</p>
-            <h1>{scheda.bandNome || "OndaSonicA"}</h1>
-            <p className="foglio-sub">Subsonica Tribute Band{aggiornato ? ` · aggiornata il ${aggiornato}` : ""}</p>
+/** Testo su più righe: ogni riga è un blocco separato, così il PDF può andare a capo pagina tra una riga e l'altra. */
+function Righe({ testo }: { testo: string }) {
+  return (
+    <>
+      {testo
+        .replace(/\s+$/, "")
+        .split("\n")
+        .map((r, i) => (
+          <div key={i} className="foglio-riga" data-riga>
+            {r || "\u00a0"}
           </div>
-        </header>
+        ))}
+    </>
+  );
+}
 
-        {formazione.length > 0 && (
-          <section data-blocco>
-            <h2>Formazione</h2>
-            <table className="foglio-tab">
-              <tbody>
-                {formazione.map((m, i) => (
-                  <tr key={i}>
-                    <td className="k">{m.nome}</td>
-                    <td>{m.ruolo}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-        )}
+/** Versione stampabile della scheda tecnica (sfondo chiaro, larghezza A4). Solo i campi compilati. */
+export const FoglioScheda = forwardRef<
+  HTMLDivElement,
+  {
+    scheda: SchedaTecnica;
+    immagine?: string;
+    erroreImmagine?: string;
+    collegamenti?: Collegamenti;
+  }
+>(function FoglioScheda(
+  { scheda, immagine, erroreImmagine, collegamenti },
+  ref,
+) {
+  const formazione = (scheda.formazione ?? []).filter(
+    (m) => pieno(m.nome) || pieno(m.ruolo),
+  );
+  const aggiornato = scheda.aggiornato
+    ? new Date(scheda.aggiornato).toLocaleDateString("it-IT", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : "";
+  // Schema collegamenti: nel PDF va subito dopo lo stage plot (l'immagine della band).
+  const schema =
+    collegamenti && collegamenti.cavi.length > 0 ? (
+      <section data-blocco>
+        <h2>Schema collegamenti</h2>
+        <div className="foglio-schema" data-riga>
+          <SchemaCollegamenti dati={collegamenti} stampa />
+        </div>
+        <table className="foglio-tab foglio-cavi">
+          <tbody>
+            {collegamenti.cavi.map((c) => (
+              <tr key={c.id} data-riga>
+                <td className="k">{c.nome || "—"}</td>
+                <td>
+                  {etichetta(c.da, collegamenti.canali)} →{" "}
+                  {etichetta(c.a, collegamenti.canali)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    ) : null;
 
-        {SEZIONI.map((sez) => {
-          const valori = (scheda[sez.key] ?? {}) as Record<string, string>;
-          const campi = Object.entries(sez.campi).filter(([k]) => k !== "immagineUrl" && pieno(valori[k]));
-          const conImmagine = sez.key === "stagePlot" && (immagine || pieno(valori.immagineUrl));
-          if (!campi.length && !conImmagine) return null;
-          return (
-            <section key={sez.key} data-blocco>
+  return (
+    <div ref={ref} className="foglio">
+      <header className="foglio-head" data-blocco>
+        <img src="/logo.png" alt="" className="foglio-logo" />
+        <div>
+          <p className="foglio-kicker">Scheda tecnica · Rider</p>
+          <h1>{scheda.bandNome || "OndaSonicA"}</h1>
+          <p className="foglio-sub">
+            Subsonica Tribute Band
+            {aggiornato ? ` · aggiornata il ${aggiornato}` : ""}
+          </p>
+        </div>
+      </header>
+
+      {formazione.length > 0 && (
+        <section data-blocco>
+          <h2>Formazione</h2>
+          <table className="foglio-tab">
+            <tbody>
+              {formazione.map((m, i) => (
+                <tr key={i} data-riga>
+                  <td className="k">{m.nome}</td>
+                  <td>{m.ruolo}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+
+      {SEZIONI.map((sez) => {
+        const valori = (scheda[sez.key] ?? {}) as Record<string, string>;
+        const campi = Object.entries(sez.campi).filter(
+          ([k]) => k !== "immagineUrl" && pieno(valori[k]),
+        );
+        const conImmagine =
+          sez.key === "stagePlot" && (immagine || pieno(valori.immagineUrl));
+        if (!campi.length && !conImmagine)
+          return sez.key === "stagePlot" ? (
+            <Fragment key={sez.key}>{schema}</Fragment>
+          ) : null;
+        return (
+          <Fragment key={sez.key}>
+            <section data-blocco>
               <h2>{sez.titolo}</h2>
               {campi.length > 0 && (
                 <table className="foglio-tab">
                   <tbody>
                     {campi.map(([k, c]) => (
-                      <tr key={k}>
+                      <tr key={k} data-riga>
                         <td className="k">{c.label}</td>
-                        <td className="pre">{valori[k]}</td>
+                        <td className="pre">
+                          <Righe testo={valori[k]} />
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               )}
-              {sez.key === "stagePlot" && immagine && <img className="foglio-plot" src={immagine} alt="Stage plot" />}
-              {sez.key === "stagePlot" && !immagine && pieno(valori.immagineUrl) && (
-                <p className="foglio-nota">
-                  Immagine stage plot: {valori.immagineUrl}
-                  {erroreImmagine ? ` (non inclusa: ${erroreImmagine})` : ""}
-                </p>
+              {sez.key === "stagePlot" && immagine && (
+                <img
+                  className="foglio-plot"
+                  src={immagine}
+                  alt="Stage plot"
+                  data-riga
+                />
               )}
+              {sez.key === "stagePlot" &&
+                !immagine &&
+                pieno(valori.immagineUrl) && (
+                  <p className="foglio-nota">
+                    Immagine stage plot: {valori.immagineUrl}
+                    {erroreImmagine ? ` (non inclusa: ${erroreImmagine})` : ""}
+                  </p>
+                )}
             </section>
-          );
-        })}
+            {sez.key === "stagePlot" && schema}
+          </Fragment>
+        );
+      })}
 
-        {pieno(scheda.noteGenerali) && (
-          <section data-blocco>
-            <h2>Note generali</h2>
-            <p className="pre">{scheda.noteGenerali}</p>
-          </section>
-        )}
+      {pieno(scheda.noteGenerali) && (
+        <section data-blocco>
+          <h2>Note generali</h2>
+          <div className="pre">
+            <Righe testo={scheda.noteGenerali} />
+          </div>
+        </section>
+      )}
 
-        <footer className="foglio-foot" data-blocco>
-          OndaSonicA – Subsonica Tribute Band · Torino
-        </footer>
-      </div>
-    );
-  },
-);
+      <footer className="foglio-foot" data-blocco>
+        OndaSonicA – Subsonica Tribute Band · Torino
+      </footer>
+    </div>
+  );
+});
