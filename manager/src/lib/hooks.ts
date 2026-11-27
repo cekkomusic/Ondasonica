@@ -15,6 +15,8 @@ export function useCollection<T extends { id: string }>(name: string): Live<T[]>
     () =>
       onSnapshot(
         collection(db(), name),
+        // senza questa opzione, se il server conferma "vuoto" uguale alla cache non arriva nessun nuovo evento
+        { includeMetadataChanges: true },
         (snap) => {
           // Su un dispositivo nuovo la prima risposta arriva dalla cache vuota: aspetta il server
           // invece di mostrare "vuoto" (che poteva far ricreare dati già esistenti).
@@ -39,6 +41,9 @@ export function useDocument<T>(path: string, id: string): Live<T | null> {
     () =>
       onSnapshot(
         doc(db(), path, id),
+        // senza questa opzione, se il server conferma "non esiste" come la cache non arriva nessun nuovo evento
+        // e la pagina resta per sempre in caricamento
+        { includeMetadataChanges: true },
         (snap) => {
           // "Non esiste" letto solo dalla cache locale non è affidabile: aspetta la conferma del server.
           if (!snap.exists() && snap.metadata.fromCache) return;
