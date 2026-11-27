@@ -1,0 +1,62 @@
+{
+ "bandNome": "Ondasonica",
+ "formazione": [
+  {
+   "nome": "SBERLA",
+   "ruolo": "CANTANTE"
+  },
+  {
+   "nome": "CEKKO",
+   "ruolo": "TASTIERISTA"
+  },
+  {
+   "nome": "PHIL",
+   "ruolo": "CHITARRISTA"
+  },
+  {
+   "nome": "GIULIO",
+   "ruolo": "BATTERISTA"
+  },
+  {
+   "nome": "WALTER",
+   "ruolo": "BASSISTA"
+  }
+ ],
+ "stagePlot": {
+  "descrizione": "Guardando il palco dal punto di vista del pubblico:\n\nTastierista - sinistra\nBassista decentrato sinistra\nCantante - centro/sinistra\nBatterista - centro/destra\nChitarrista - destra",
+  "immagineUrl": "https://ondasonica-manager.vercel.app/stageplot-2026.jpg"
+ },
+ "backline": {
+  "voce": "STRUMENTAZIONE\n\nRADIOMICROFONI\n\n• Shure Beta 58 con sistema wireless Shure ULX-D / ricevitore ULXD4\n• Sennheiser XSW 835 con sistema wireless Sennheiser\n\nPROCESSORE VOCE\n\n• TC Helicon VoiceLive 2\n• Utilizzato per la gestione degli effetti vocali\n\nSISTEMA IN-EAR\n\n• Sennheiser XSW IEM wireless\n\nCOLLEGAMENTI AUDIO\n\n1. SHURE – VOCE PULITA\n\nShure Beta 58\n↓\nRicevitore Shure ULXD4\n↓\nIngresso canale del nostro mixer dedicato alla voce pulita\n\n2. SENNHEISER – VOCE CON EFFETTI\n\nSennheiser XSW 835\n↓\nRicevitore Sennheiser\n↓\nIngresso microfonico TC Helicon VoiceLive 2\n↓\nUscita VoiceLive 2\n↓\nIngresso del nostro mixer dedicato alla voce con effetti\n\n3. IN-EAR MONITOR\n\nUscita AUX del nostro mixer\n↓\nIngresso trasmettitore Sennheiser XSW IEM\n↓\nTrasmissione wireless\n↓\nRicevitore XSW IEM\n↓\nAuricolari In-Ear\n\nSCHEMA SINTETICO\n\nVOCE PULITA\n\nSHURE Beta 58\n↓\nSHURE ULXD4\n↓\nMIXER – CANALE VOCE PULITA\n\nVOCE EFFETTATA\n\nSENNHEISER XSW 835\n↓\nRICEVITORE SENNHEISER\n↓\nTC HELICON VOICELIVE 2\n↓\nMIXER – CANALE VOCE EFFETTATA\n\nMONITOR IN-EAR\n\nMIXER – AUX OUT\n↓\nSENNHEISER XSW IEM – TRASMETTITORE\n↓\nSENNHEISER XSW IEM – RICEVITORE\n↓\nIN-EAR",
+  "batteria": "Gran cassa, rullante 2 Tom e timpano, piatti Sabian Axx, charleston due Crash, Ride, tre splash.\nCentralina della Nux con un Pad per un singolo suono.\nMixer a due canali per le cuffie.",
+  "basso": "Testata Brugera BV1001T 2000watt\nValvolare\nCabinet 4×12 + Cabinet 2×15\nPeavey\nSpia esb\nBasso 4 corde\nSterling Stingray Ray4 Black\nBasso 4 corde\nSquier by Fender precision bass\nBasso 4 corde\nEKO FRETLESS del 1979\nBasso 4 corde\nSpector mono corpo 1980\nPEDALIERA digitale ZoomB6\nOctave analogico Boss OC-5\nPedale volume\nEn-are Xvive\nSistema wireless Trasmettitore/ricevitore AKG EMS40\nTablet collegato a mixer\nCollegamento testa su due cabinet\n+ spia Esb\nEntrata di due bassi in ZoomB6\n+ Octave boss + pedale volume uscita su trasmettitore AKG\ndirezione ricevitore collegato alla testata\nCollegamento con Canon da pedaliera zoom a mixer per Collegamento en-are.\nIl basso entra direttamente in un canale del Behringer X18 (non più nel mixer analogico con la batteria).",
+  "chitarre": "Chitarra: Fender Stratocaster American Ultra II\nBackup: Fender Stratocaster Classic 60\n\nPedali/FX: Dunlop Cry Baby → Line 6 HX Stomp + pedaliera MIDI\n\nAmplificazione: Laney LFR-112 FRFR → Mixer (XLR)\n\nVoce: Shure SM58 + asta\n\nMonitor: Xvive U45 IEM wireless (AUX dedicato mixer)",
+  "tastiere": "Sequential Take5 + Moog Little Phatty 2\n--» vanno in --»\nKorg Nautilus (ha 2 mono in)\n\nDa Korg Nautilus uscite:\nL+R + CLICK (solo monit.) + SAMUEL (solo monit.) + CORI + DRUM MACHINE.\n\nKorg Microkorg: 1 usicta mono indipendente.\n\nTUTTO VA A BEHRINGER X18",
+  "altro": "Assistente band: SILVANO"
+ },
+ "audio": {
+  "canaliRichiesti": "24 canali",
+  "microfoniRichiesti": "2 voce + 8 mic batteria",
+  "monitoraggio": "5 linee in ear\n5 spie collegate in cascata",
+  "note": "- Mixer band palco: Behringer X18 (basso collegato direttamente a un canale)\n- Mixer analogico per la batteria\n- Set microfoni batteria"
+ },
+ "luci": {
+  "richiesteSpeciali": "Led rosse",
+  "note": ""
+ },
+ "visualsProiezioni": {
+  "requisitiTecnici": "Proiettore, connessione HDMI, schermo",
+  "schermoMinimo": "",
+  "note": "Visuals gestite da PC della band"
+ },
+ "alimentazioneElettrica": {
+  "potenzaRichiesta": "6 kw , 2 linee separate",
+  "note": "Prolunghe,  ciabatte"
+ },
+ "tempi": {
+  "montaggio": "60 min",
+  "soundcheck": "90 min",
+  "smontaggio": "60 min"
+ },
+ "noteGenerali": "Tastiere, sequenze, drum machine, click, voci, chitarra da pedaliera digitale e basso su Mixer Behringer X18.\n\nBatteria su mixer analogico, poi su 2 canali batteria in X18. Il basso entra direttamente in 1 canale del Behringer X18.\n\nUSCITE AUX per in-ear (cavi tirati in postazione musicista):\n1.SBERLA cantante\n2.PHIL chitarrista\n3.CEKKO tastierista\n4.WALLY bassista\n5.GIULIO batterista"
+}
