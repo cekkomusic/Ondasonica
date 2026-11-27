@@ -169,6 +169,7 @@ export function predefiniti(): Collegamenti {
     cavo("moog.out", "nautilus.in2", "Moog"),
     cavo("nautilus.l", "x18.in5", "Tast L"),
     cavo("nautilus.r", "x18.in6", "Tast R"),
+    cavo("nautilus.cori", "x18.in7", "Cori"),
     cavo("nautilus.click", "x18.in8", "Click"),
     cavo("chitarra.out", "fxChitarra.in", "Chitarra"),
     cavo("fxChitarra.out", "cassaChitarra.in", "Chitarra effettata"),
